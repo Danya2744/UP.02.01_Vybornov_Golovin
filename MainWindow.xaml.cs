@@ -42,7 +42,7 @@ namespace UP._02._01_Vybornov
             _currentRole = e.RoleName;
 
             UpdateUserInterface(e.User, e.RoleName);
-            NavigateBasedOnRole(e.RoleName);
+            //NavigateBasedOnRole(e.RoleName);
         }
 
         private void OnGuestLoggedIn(object sender, EventArgs e)
@@ -51,7 +51,7 @@ namespace UP._02._01_Vybornov
             _currentRole = "гость";
 
             UpdateUserInterface(null, "гость");
-            NavigateToEventsPage();
+            //NavigateToEventsPage();
         }
 
         private void UpdateUserInterface(users user, string role)
@@ -94,62 +94,62 @@ namespace UP._02._01_Vybornov
             return "Доброй ночи";
         }
 
-        private void NavigateBasedOnRole(string role)
-        {
-            switch (role.ToLower())
-            {
-                case "организатор":
-                    NavigateToOrganizerPage();
-                    break;
-                case "участник":
-                    NavigateToParticipantPage();
-                    break;
-                case "модератор":
-                    NavigateToModeratorPage();
-                    break;
-                case "жюри":
-                    NavigateToJuryPage();
-                    break;
-                default:
-                    NavigateToEventsPage();
-                    break;
-            }
-        }
+        //private void NavigateBasedOnRole(string role)
+        //{
+        //    switch (role.ToLower())
+        //    {
+        //        case "организатор":
+        //            NavigateToOrganizerPage();
+        //            break;
+        //        case "участник":
+        //            NavigateToParticipantPage();
+        //            break;
+        //        case "модератор":
+        //            NavigateToModeratorPage();
+        //            break;
+        //        case "жюри":
+        //            NavigateToJuryPage();
+        //            break;
+        //        default:
+        //            NavigateToEventsPage();
+        //            break;
+        //    }
+        //}
 
-        private void NavigateToOrganizerPage()
-        {
-            StatusBarText.Text = "Режим организатора";
-            var organizerPage = new OrganizerPage(_currentUser);
-            MainFrame.Navigate(organizerPage);
-        }
+        //private void NavigateToOrganizerPage()
+        //{
+        //    StatusBarText.Text = "Режим организатора";
+        //    var organizerPage = new OrganizerPage(_currentUser);
+        //    MainFrame.Navigate(organizerPage);
+        //}
 
-        private void NavigateToParticipantPage()
-        {
-            StatusBarText.Text = "Режим участника";
-            var participantPage = new ParticipantPage(_currentUser);
-            MainFrame.Navigate(participantPage);
-        }
+        //private void NavigateToParticipantPage()
+        //{
+        //    StatusBarText.Text = "Режим участника";
+        //    var participantPage = new ParticipantPage(_currentUser);
+        //    MainFrame.Navigate(participantPage);
+        //}
 
-        private void NavigateToModeratorPage()
-        {
-            StatusBarText.Text = "Режим модератора";
-            var moderatorPage = new ModeratorPage(_currentUser);
-            MainFrame.Navigate(moderatorPage);
-        }
+        //private void NavigateToModeratorPage()
+        //{
+        //    StatusBarText.Text = "Режим модератора";
+        //    var moderatorPage = new ModeratorPage(_currentUser);
+        //    MainFrame.Navigate(moderatorPage);
+        //}
 
-        private void NavigateToJuryPage()
-        {
-            StatusBarText.Text = "Режим жюри";
-            var juryPage = new JuryPage(_currentUser);
-            MainFrame.Navigate(juryPage);
-        }
+        //private void NavigateToJuryPage()
+        //{
+        //    StatusBarText.Text = "Режим жюри";
+        //    var juryPage = new JuryPage(_currentUser);
+        //    MainFrame.Navigate(juryPage);
+        //}
 
-        private void NavigateToEventsPage()
-        {
-            StatusBarText.Text = "Просмотр мероприятий";
-            var eventsPage = new EventsPage(_currentUser, _currentRole);
-            MainFrame.Navigate(eventsPage);
-        }
+        //private void NavigateToEventsPage()
+        //{
+        //    StatusBarText.Text = "Просмотр мероприятий";
+        //    var eventsPage = new EventsPage(_currentUser, _currentRole);
+        //    MainFrame.Navigate(eventsPage);
+        //}
 
         private void LogoutButtonClick(object sender, RoutedEventArgs e)
         {

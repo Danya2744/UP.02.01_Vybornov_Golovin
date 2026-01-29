@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:UP._02._01_Vybornov"
         mc:Ignorable="d"
         Title="Система конференций - Авторизация" 
-        Height="700" 
+        Height="790" 
         Width="1200"
         WindowStartupLocation="CenterScreen"
         FontFamily="Comic Sans MS"
@@ -144,9 +144,6 @@
         <StatusBar Grid.Row="2" 
                   Background="{StaticResource SecondaryBackground}" 
                   Padding="10">
-            <StatusBarItem>
-                <TextBlock x:Name="StatusBarText" Text="Готово"/>
-            </StatusBarItem>
         </StatusBar>
     </Grid>
 </Window>
