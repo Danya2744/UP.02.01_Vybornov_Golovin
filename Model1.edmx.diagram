@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="05e29f7d69174c74b6d31c32a70e3d3c" Name="Diagram1">
+        <EntityTypeShape EntityType="ConferenceDBModel.activities" Width="1.5" PointX="3" PointY="14.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="ConferenceDBModel.cities" Width="1.5" PointX="3.75" PointY="11.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="ConferenceDBModel.city_event" Width="1.5" PointX="6" PointY="15" IsExpanded="true" />
+        <EntityTypeShape EntityType="ConferenceDBModel.countries" Width="1.5" PointX="0.75" PointY="3.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="ConferenceDBModel.directions" Width="1.5" PointX="0.75" PointY="7.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="ConferenceDBModel.events" Width="1.5" PointX="0.75" PointY="14.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="ConferenceDBModel.genders" Width="1.5" PointX="0.75" PointY="9.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="ConferenceDBModel.jury_activities" Width="1.5" PointX="5.25" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="ConferenceDBModel.moderator_activities" Width="1.5" PointX="5.25" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="ConferenceDBModel.roles" Width="1.5" PointX="0.75" PointY="11.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="ConferenceDBModel.users" Width="1.5" PointX="3" PointY="2.5" IsExpanded="true" />
+        <AssociationConnector Association="ConferenceDBModel.FK__activitie__event__5441852A" ManuallyRouted="false" />
+        <AssociationConnector Association="ConferenceDBModel.FK__jury_acti__activ__571DF1D5" ManuallyRouted="false" />
+        <AssociationConnector Association="ConferenceDBModel.FK__moderator__activ__59063A47" ManuallyRouted="false" />
+        <AssociationConnector Association="ConferenceDBModel.FK_city_event_cities" ManuallyRouted="false" />
+        <AssociationConnector Association="ConferenceDBModel.FK_city_event_city_event" ManuallyRouted="false" />
+        <AssociationConnector Association="ConferenceDBModel.FK__users__country_i__5AEE82B9" ManuallyRouted="false" />
+        <AssociationConnector Association="ConferenceDBModel.FK_users_directions" ManuallyRouted="false" />
+        <AssociationConnector Association="ConferenceDBModel.FK__users__gender_id__5BE2A6F2" ManuallyRouted="false" />
+        <AssociationConnector Association="ConferenceDBModel.FK__jury_acti__jury___5812160E" ManuallyRouted="false" />
+        <AssociationConnector Association="ConferenceDBModel.FK__moderator__moder__59FA5E80" ManuallyRouted="false" />
+        <AssociationConnector Association="ConferenceDBModel.FK__users__role_id__5CD6CB2B" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
