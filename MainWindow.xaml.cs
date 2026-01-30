@@ -42,7 +42,7 @@ namespace UP._02._01_Vybornov
             _currentRole = e.RoleName;
 
             UpdateUserInterface(e.User, e.RoleName);
-            //NavigateBasedOnRole(e.RoleName);
+            NavigateToEventsPage();
         }
 
         private void OnGuestLoggedIn(object sender, EventArgs e)
@@ -51,7 +51,7 @@ namespace UP._02._01_Vybornov
             _currentRole = "гость";
 
             UpdateUserInterface(null, "гость");
-            //NavigateToEventsPage();
+            NavigateToEventsPage();
         }
 
         private void UpdateUserInterface(users user, string role)
@@ -65,15 +65,17 @@ namespace UP._02._01_Vybornov
                 UserInfoTextBlock.Text = $"{firstName}";
                 UserRoleTextBlock.Text = CapitalizeFirstLetter(role);
                 Title = $"Система конференций - {CapitalizeFirstLetter(role)} ({greeting}, {firstName})";
+
+                LogoutButton.Visibility = Visibility.Visible;
             }
             else
             {
                 UserInfoTextBlock.Text = "Гость";
                 UserRoleTextBlock.Text = "Неавторизованный пользователь";
                 Title = "Система конференций - Гость";
-            }
 
-            LogoutButton.Visibility = role == "гость" ? Visibility.Visible : Visibility.Visible;
+                LogoutButton.Visibility = Visibility.Visible;
+            }
         }
 
         private string CapitalizeFirstLetter(string text)
@@ -88,68 +90,17 @@ namespace UP._02._01_Vybornov
         {
             int hour = DateTime.Now.Hour;
 
-            if (hour >= 4 && hour < 12) return "Доброе утро";
+            if (hour >= 5 && hour < 12) return "Доброе утро";
             if (hour >= 12 && hour < 18) return "Добрый день";
             if (hour >= 18 && hour < 23) return "Добрый вечер";
             return "Доброй ночи";
         }
 
-        //private void NavigateBasedOnRole(string role)
-        //{
-        //    switch (role.ToLower())
-        //    {
-        //        case "организатор":
-        //            NavigateToOrganizerPage();
-        //            break;
-        //        case "участник":
-        //            NavigateToParticipantPage();
-        //            break;
-        //        case "модератор":
-        //            NavigateToModeratorPage();
-        //            break;
-        //        case "жюри":
-        //            NavigateToJuryPage();
-        //            break;
-        //        default:
-        //            NavigateToEventsPage();
-        //            break;
-        //    }
-        //}
-
-        //private void NavigateToOrganizerPage()
-        //{
-        //    StatusBarText.Text = "Режим организатора";
-        //    var organizerPage = new OrganizerPage(_currentUser);
-        //    MainFrame.Navigate(organizerPage);
-        //}
-
-        //private void NavigateToParticipantPage()
-        //{
-        //    StatusBarText.Text = "Режим участника";
-        //    var participantPage = new ParticipantPage(_currentUser);
-        //    MainFrame.Navigate(participantPage);
-        //}
-
-        //private void NavigateToModeratorPage()
-        //{
-        //    StatusBarText.Text = "Режим модератора";
-        //    var moderatorPage = new ModeratorPage(_currentUser);
-        //    MainFrame.Navigate(moderatorPage);
-        //}
-
-        //private void NavigateToJuryPage()
-        //{
-        //    StatusBarText.Text = "Режим жюри";
-        //    var juryPage = new JuryPage(_currentUser);
-        //    MainFrame.Navigate(juryPage);
-        //}
-
-        //private void NavigateToEventsPage()
-        //{
-        //    StatusBarText.Text = "Просмотр мероприятий";
-        //    var eventsPage = new EventsPage(_currentUser, _currentRole);
-        //    MainFrame.Navigate(eventsPage);
-        //}
+        private void NavigateToEventsPage()
+        {
+            var eventsPage = new EventsPage(_currentUser, _currentRole);
+            MainFrame.Navigate(eventsPage);
+        }
 
         private void LogoutButtonClick(object sender, RoutedEventArgs e)
         {

@@ -1,0 +1,314 @@
+﻿<Page x:Class="UP._02._01_Vybornov.Pages.ProfilePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:UP._02._01_Vybornov.Pages"
+      mc:Ignorable="d" 
+      Title="Мой профиль"
+      FontFamily="Comic Sans MS">
+
+    <Page.Resources>
+        <SolidColorBrush x:Key="PrimaryBackground" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="SecondaryBackground" Color="#ABCFCE"/>
+        <SolidColorBrush x:Key="AccentColor" Color="#546F94"/>
+        <SolidColorBrush x:Key="TextColor" Color="#000000"/>
+        <SolidColorBrush x:Key="SecondaryTextColor" Color="#666666"/>
+        <SolidColorBrush x:Key="BorderColor" Color="#DDDDDD"/>
+
+        <Style x:Key="BackButtonStyle" TargetType="Button">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Background" Value="{StaticResource SecondaryBackground}"/>
+            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
+        <Style x:Key="SaveButtonStyle" TargetType="Button">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="15,8"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Background" Value="{StaticResource AccentColor}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
+        <Style x:Key="FormLabelStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+            <Setter Property="Margin" Value="0,10,0,5"/>
+        </Style>
+
+        <Style x:Key="FormInputStyle" TargetType="TextBox">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Margin" Value="0,0,0,5"/>
+        </Style>
+
+        <Style x:Key="ReadOnlyFieldStyle" TargetType="TextBox">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="#F5F5F5"/>
+            <Setter Property="IsReadOnly" Value="True"/>
+            <Setter Property="Margin" Value="0,0,0,5"/>
+        </Style>
+    </Page.Resources>
+
+    <Grid Background="{StaticResource SecondaryBackground}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Шапка -->
+        <Border Grid.Row="0" 
+                Background="{StaticResource PrimaryBackground}" 
+                Padding="15"
+                BorderBrush="{StaticResource BorderColor}"
+                BorderThickness="0,0,0,1">
+            <DockPanel>
+                <Button x:Name="BackButton"
+                        Content="← Назад"
+                        Style="{StaticResource BackButtonStyle}"
+                        Padding="15,8"
+                        Click="BackButtonClick"
+                        DockPanel.Dock="Left"/>
+
+                <TextBlock Text="Мой профиль" 
+                          FontSize="20" 
+                          FontWeight="Bold"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center"/>
+            </DockPanel>
+        </Border>
+
+        <!-- Контент профиля -->
+        <ScrollViewer Grid.Row="1" 
+                     VerticalScrollBarVisibility="Auto"
+                     Padding="20">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="400"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Левая колонка - фото и основная информация -->
+                <StackPanel Grid.Column="0" Margin="0,0,20,0">
+                    <Border Background="{StaticResource PrimaryBackground}"
+                            BorderBrush="{StaticResource BorderColor}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="20">
+                        <StackPanel>
+                            <!-- Фото пользователя -->
+                            <Border Width="150" 
+                                    Height="150"
+                                    Background="{StaticResource SecondaryBackground}"
+                                    CornerRadius="75"
+                                    HorizontalAlignment="Center"
+                                    Margin="0,0,0,20">
+                                <Image x:Name="UserPhotoImage"
+                                       Stretch="Uniform"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                            </Border>
+
+                            <!-- ID Number (неизменяемый) -->
+                            <TextBlock Text="ID Number:" 
+                                      Style="{StaticResource FormLabelStyle}"/>
+                            <TextBox x:Name="IdNumberTextBox"
+                                    Style="{StaticResource ReadOnlyFieldStyle}"/>
+
+                            <!-- Роль -->
+                            <TextBlock Text="Роль:" 
+                                      Style="{StaticResource FormLabelStyle}"/>
+                            <TextBox x:Name="RoleTextBox"
+                                    Style="{StaticResource ReadOnlyFieldStyle}"/>
+
+                            <!-- Дата регистрации -->
+                            <TextBlock Text="Зарегистрирован:" 
+                                      Style="{StaticResource FormLabelStyle}"/>
+                            <TextBox x:Name="RegistrationDateTextBox"
+                                    Style="{StaticResource ReadOnlyFieldStyle}"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <!-- Правая колонка - редактируемые поля -->
+                <StackPanel Grid.Column="1">
+                    <Border Background="{StaticResource PrimaryBackground}"
+                            BorderBrush="{StaticResource BorderColor}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="20">
+                        <StackPanel>
+                            <TextBlock Text="Личная информация" 
+                                      FontSize="18"
+                                      FontWeight="Bold"
+                                      Foreground="{StaticResource AccentColor}"
+                                      Margin="0,0,0,20"/>
+
+                            <!-- ФИО -->
+                            <TextBlock Text="ФИО:" 
+                                      Style="{StaticResource FormLabelStyle}"/>
+                            <TextBox x:Name="FullNameTextBox"
+                                    Style="{StaticResource FormInputStyle}"/>
+
+                            <!-- Email -->
+                            <TextBlock Text="Email:" 
+                                      Style="{StaticResource FormLabelStyle}"/>
+                            <TextBox x:Name="EmailTextBox"
+                                    Style="{StaticResource FormInputStyle}"/>
+
+                            <!-- Телефон -->
+                            <TextBlock Text="Телефон:" 
+                                      Style="{StaticResource FormLabelStyle}"/>
+                            <TextBox x:Name="PhoneTextBox"
+                                    Style="{StaticResource FormInputStyle}"/>
+
+                            <!-- Дата рождения -->
+                            <TextBlock Text="Дата рождения:" 
+                                      Style="{StaticResource FormLabelStyle}"/>
+                            <DatePicker x:Name="BirthDatePicker"
+                                       FontSize="14"
+                                       Padding="10"
+                                       BorderBrush="{StaticResource BorderColor}"
+                                       BorderThickness="1"
+                                       Margin="0,0,0,15"/>
+
+                            <!-- Смена пароля -->
+                            <TextBlock Text="Смена пароля" 
+                                      FontSize="16"
+                                      FontWeight="Bold"
+                                      Foreground="{StaticResource AccentColor}"
+                                      Margin="0,20,0,10"/>
+
+                            <!-- Старый пароль -->
+                            <TextBlock Text="Текущий пароль:" 
+                                      Style="{StaticResource FormLabelStyle}"/>
+                            <PasswordBox x:Name="CurrentPasswordBox"
+                                        FontSize="14"
+                                        Padding="10"
+                                        BorderBrush="{StaticResource BorderColor}"
+                                        BorderThickness="1"
+                                        Margin="0,0,0,10"/>
+
+                            <!-- Новый пароль -->
+                            <TextBlock Text="Новый пароль:" 
+                                      Style="{StaticResource FormLabelStyle}"/>
+                            <PasswordBox x:Name="NewPasswordBox"
+                                        FontSize="14"
+                                        Padding="10"
+                                        BorderBrush="{StaticResource BorderColor}"
+                                        BorderThickness="1"
+                                        Margin="0,0,0,10"/>
+
+                            <!-- Повтор нового пароля -->
+                            <TextBlock Text="Повторите новый пароль:" 
+                                      Style="{StaticResource FormLabelStyle}"/>
+                            <PasswordBox x:Name="ConfirmPasswordBox"
+                                        FontSize="14"
+                                        Padding="10"
+                                        BorderBrush="{StaticResource BorderColor}"
+                                        BorderThickness="1"
+                                        Margin="0,0,0,20"/>
+
+                            <!-- Кнопки -->
+                            <StackPanel Orientation="Horizontal" 
+                                       HorizontalAlignment="Right"
+                                       Margin="0,20,0,0">
+                                <Button x:Name="CancelButton"
+                                        Content="Отмена"
+                                        Style="{StaticResource BackButtonStyle}"
+                                        Padding="15,8"
+                                        Click="CancelButtonClick"/>
+
+                                <Button x:Name="SaveButton"
+                                        Content="Сохранить изменения"
+                                        Style="{StaticResource SaveButtonStyle}"
+                                        Padding="15,8"
+                                        Margin="10,0,0,0"
+                                        Click="SaveButtonClick"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Статистика -->
+                    <Border Background="{StaticResource PrimaryBackground}"
+                            BorderBrush="{StaticResource BorderColor}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="20"
+                            Margin="0,20,0,0">
+                        <StackPanel>
+                            <TextBlock Text="Моя активность" 
+                                      FontSize="18"
+                                      FontWeight="Bold"
+                                      Foreground="{StaticResource AccentColor}"
+                                      Margin="0,0,0,15"/>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Зарегистрировано мероприятий -->
+                                <StackPanel Grid.Column="0" 
+                                           HorizontalAlignment="Center">
+                                    <TextBlock x:Name="EventsCountText"
+                                              Text="0"
+                                              FontSize="24"
+                                              FontWeight="Bold"
+                                              Foreground="{StaticResource AccentColor}"
+                                              HorizontalAlignment="Center"/>
+                                    <TextBlock Text="мероприятий"
+                                              FontSize="14"
+                                              HorizontalAlignment="Center"/>
+                                </StackPanel>
+
+                                <!-- Активных регистраций -->
+                                <StackPanel Grid.Column="1" 
+                                           HorizontalAlignment="Center">
+                                    <TextBlock x:Name="ActiveEventsText"
+                                              Text="0"
+                                              FontSize="24"
+                                              FontWeight="Bold"
+                                              Foreground="{StaticResource AccentColor}"
+                                              HorizontalAlignment="Center"/>
+                                    <TextBlock Text="активных"
+                                              FontSize="14"
+                                              HorizontalAlignment="Center"/>
+                                </StackPanel>
+
+                                <!-- Посещено мероприятий -->
+                                <StackPanel Grid.Column="2" 
+                                           HorizontalAlignment="Center">
+                                    <TextBlock x:Name="VisitedEventsText"
+                                              Text="0"
+                                              FontSize="24"
+                                              FontWeight="Bold"
+                                              Foreground="{StaticResource AccentColor}"
+                                              HorizontalAlignment="Center"/>
+                                    <TextBlock Text="посещено"
+                                              FontSize="14"
+                                              HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+</Page>

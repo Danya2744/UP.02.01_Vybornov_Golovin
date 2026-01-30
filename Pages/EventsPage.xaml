@@ -3,12 +3,325 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:UP._02._01_Vybornov.Pages"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="EventsPage">
+      Title="Мероприятия"
+      FontFamily="Comic Sans MS">
 
-    <Grid>
-        
+    <Page.Resources>
+        <SolidColorBrush x:Key="PrimaryBackground" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="SecondaryBackground" Color="#ABCFCE"/>
+        <SolidColorBrush x:Key="AccentColor" Color="#546F94"/>
+        <SolidColorBrush x:Key="TextColor" Color="#000000"/>
+        <SolidColorBrush x:Key="SecondaryTextColor" Color="#666666"/>
+        <SolidColorBrush x:Key="BorderColor" Color="#DDDDDD"/>
+        <SolidColorBrush x:Key="UpcomingEventColor" Color="#4CAF50"/>
+        <SolidColorBrush x:Key="PastEventColor" Color="#9E9E9E"/>
+
+        <Style x:Key="EventCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource PrimaryBackground}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Margin" Value="0,10,0,10"/>
+            <Setter Property="Padding" Value="15"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style x:Key="NavigationButtonStyle" TargetType="Button">
+            <Setter Property="Margin" Value="5,0,0,0"/>
+            <Setter Property="Padding" Value="15,8"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Background" Value="{StaticResource SecondaryBackground}"/>
+            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
+        <Style x:Key="FilterComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="Padding" Value="10,0,10,0"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="DatePickerStyle" TargetType="DatePicker">
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="5"/>
+        </Style>
+
+        <!-- Шаблон для карточки мероприятия -->
+        <DataTemplate x:Key="EventCardTemplate">
+            <Border Style="{StaticResource EventCardStyle}" 
+                    MouseLeftButtonDown="EventCard_MouseLeftButtonDown"
+                    Tag="{Binding event_id}">
+                <StackPanel>
+                    <!-- Заголовок -->
+                    <TextBlock Text="{Binding event_name}" 
+                              FontSize="16"
+                              FontWeight="Bold"
+                              Foreground="{StaticResource AccentColor}"
+                              TextAlignment="Center"
+                              HorizontalAlignment="Center"
+                              Margin="0,0,0,20"
+                              TextWrapping="Wrap"/>
+
+                    <!-- Содержимое -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Левая часть с лого и данными -->
+                        <StackPanel Grid.Column="0" 
+                                   Width="130"
+                                   Margin="0,0,20,0">
+
+                            <!-- Логотип -->
+                            <Border Width="100" 
+                                    Height="100"
+                                    Background="White"
+                                    CornerRadius="4"
+                                    BorderBrush="{StaticResource BorderColor}"
+                                    BorderThickness="1"
+                                    Margin="0,0,0,15">
+                                <Image Source="{Binding logo_path, FallbackValue=/Resources/default_event.png}"
+                                       Stretch="Uniform"/>
+                            </Border>
+
+                            <!-- Данные -->
+                            <StackPanel>
+                                <TextBlock Text="Дата:" 
+                                          FontSize="11"
+                                          FontWeight="Bold"
+                                          Foreground="{StaticResource AccentColor}"/>
+                                <TextBlock Text="{Binding date_range}"
+                                          FontSize="11"
+                                          Foreground="{StaticResource TextColor}"
+                                          Margin="0,2,0,8"/>
+
+                                <TextBlock Text="Город:" 
+                                          FontSize="11"
+                                          FontWeight="Bold"
+                                          Foreground="{StaticResource AccentColor}"/>
+                                <TextBlock Text="{Binding city_name}"
+                                          FontSize="11"
+                                          Foreground="{StaticResource TextColor}"
+                                          Margin="0,2,0,8"/>
+
+                                <TextBlock Text="Организатор:" 
+                                          FontSize="11"
+                                          FontWeight="Bold"
+                                          Foreground="{StaticResource AccentColor}"/>
+                                <TextBlock Text="{Binding organizer_name}"
+                                          FontSize="11"
+                                          Foreground="{StaticResource TextColor}"
+                                          Margin="0,2,0,0"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- Правая часть: описание -->
+                        <Border Grid.Column="1"
+                                Background="{StaticResource PrimaryBackground}"
+                                CornerRadius="4"
+                                Padding="12"
+                                BorderBrush="{StaticResource BorderColor}"
+                                BorderThickness="1"
+                                Margin="5,0,0,0">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <TextBlock FontSize="12"
+                                          Foreground="{StaticResource TextColor}"
+                                          TextWrapping="Wrap"
+                                          LineHeight="1.4">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Text" Value="{Binding description}"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding description}" Value="{x:Null}">
+                                                    <Setter Property="Text" Value="Описание отсутствует"/>
+                                                    <Setter Property="Foreground" Value="{StaticResource SecondaryTextColor}"/>
+                                                    <Setter Property="FontStyle" Value="Italic"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding description}" Value="">
+                                                    <Setter Property="Text" Value="Описание отсутствует"/>
+                                                    <Setter Property="Foreground" Value="{StaticResource SecondaryTextColor}"/>
+                                                    <Setter Property="FontStyle" Value="Italic"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </ScrollViewer>
+                        </Border>
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+    </Page.Resources>
+
+    <Grid Background="{StaticResource SecondaryBackground}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Шапка с заголовком и навигацией -->
+        <Border Grid.Row="0" 
+                Background="{StaticResource PrimaryBackground}" 
+                Padding="15"
+                BorderBrush="{StaticResource BorderColor}"
+                BorderThickness="0,0,0,1">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
+                    <TextBlock Text="Календарь мероприятий" 
+                              FontSize="20" 
+                              FontWeight="Bold"/>
+                    <TextBlock x:Name="EventsCountTextBlock" 
+                              Text="Загрузка мероприятий..." 
+                              FontSize="12"
+                              Foreground="{StaticResource SecondaryTextColor}"
+                              Margin="20,5,0,0"
+                              VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Навигационные кнопки -->
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                    <Button x:Name="MyEventsButton"
+                            Content="Мои мероприятия"
+                            Style="{StaticResource NavigationButtonStyle}"
+                            Click="MyEventsButtonClick"
+                            Visibility="Collapsed"/>
+
+                    <Button x:Name="ProfileButton"
+                            Content="Мой профиль"
+                            Style="{StaticResource NavigationButtonStyle}"
+                            Click="ProfileButtonClick"
+                            Visibility="Collapsed"/>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- Панель фильтров -->
+        <Border Grid.Row="1" 
+                Background="{StaticResource PrimaryBackground}" 
+                Padding="15"
+                BorderBrush="{StaticResource BorderColor}"
+                BorderThickness="0,0,0,1">
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="250"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Фильтр по направлению -->
+                <StackPanel Grid.Column="0" 
+                           Orientation="Vertical"
+                           Margin="0,0,10,0">
+                    <TextBlock Text="Фильтр по направлению:" 
+                              FontSize="14"
+                              FontWeight="SemiBold"
+                              Margin="0,0,0,5"/>
+                    <ComboBox x:Name="DirectionFilterComboBox" 
+                             SelectionChanged="DirectionFilterComboBox_SelectionChanged"
+                             Style="{StaticResource FilterComboBoxStyle}">
+                        <ComboBox.ToolTip>
+                            <ToolTip>
+                                Выберите направление для фильтрации
+                            </ToolTip>
+                        </ComboBox.ToolTip>
+                    </ComboBox>
+                </StackPanel>
+
+                <!-- Фильтр по дате начала -->
+                <StackPanel Grid.Column="1" 
+                           Orientation="Vertical"
+                           Margin="10,0,10,0">
+                    <TextBlock Text="Дата начала (с):" 
+                              FontSize="14"
+                              FontWeight="SemiBold"
+                              Margin="0,0,0,5"/>
+                    <DatePicker x:Name="StartDatePicker"
+                               Style="{StaticResource DatePickerStyle}"
+                               SelectedDateChanged="StartDatePicker_SelectedDateChanged">
+                        <DatePicker.ToolTip>
+                            <ToolTip>
+                                Выберите начальную дату для фильтрации
+                            </ToolTip>
+                        </DatePicker.ToolTip>
+                    </DatePicker>
+                </StackPanel>
+
+                <!-- Фильтр по дате окончания -->
+                <StackPanel Grid.Column="2" 
+                           Orientation="Vertical"
+                           Margin="10,0,10,0">
+                    <TextBlock Text="Дата окончания (по):" 
+                              FontSize="14"
+                              FontWeight="SemiBold"
+                              Margin="0,0,0,5"/>
+                    <DatePicker x:Name="EndDatePicker"
+                               Style="{StaticResource DatePickerStyle}"
+                               SelectedDateChanged="EndDatePicker_SelectedDateChanged">
+                        <DatePicker.ToolTip>
+                            <ToolTip>
+                                Выберите конечную дату для фильтрации
+                            </ToolTip>
+                        </DatePicker.ToolTip>
+                    </DatePicker>
+                </StackPanel>
+
+                <!-- Кнопки управления фильтрами -->
+                <StackPanel Grid.Column="3" 
+                           Orientation="Vertical"
+                           Margin="10,0,0,0">
+                    <TextBlock Text="Управление фильтрами:" 
+                              FontSize="14"
+                              FontWeight="SemiBold"
+                              Margin="0,0,0,5"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="Применить"
+                                Click="ApplyDateFilterButtonClick"
+                                Background="{StaticResource AccentColor}"
+                                Foreground="White"
+                                FontSize="14"
+                                Padding="10,5"
+                                Margin="0,0,5,0"
+                                BorderThickness="0"
+                                Cursor="Hand"
+                                Height="35"
+                                Width="100"/>
+
+                        <Button Content="Сбросить"
+                                Click="ResetFiltersButtonClick"
+                                Background="{StaticResource SecondaryBackground}"
+                                Foreground="{StaticResource TextColor}"
+                                FontSize="14"
+                                Padding="10,5"
+                                BorderThickness="0"
+                                Cursor="Hand"
+                                Height="35"
+                                Width="100"/>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Список мероприятий -->
+        <ScrollViewer Grid.Row="2" 
+                     VerticalScrollBarVisibility="Auto"
+                     Padding="20">
+            <ItemsControl x:Name="ItemsControlEvents"
+                         ItemTemplate="{StaticResource EventCardTemplate}"/>
+        </ScrollViewer>
     </Grid>
 </Page>

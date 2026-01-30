@@ -82,10 +82,10 @@
         </Style>
     </Page.Resources>
 
-    <Grid Background="{StaticResource SecondaryBackground}" Margin="0,0,0,-38">
+    <Grid Background="{StaticResource SecondaryBackground}" Margin="0,0,0,-73">
         <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
             <Border Style="{StaticResource LoginCardStyle}"
-                   Width="450" Margin="0,0,0,-15">
+                   Width="450" Margin="0,0,0,40">
 
                 <StackPanel>
                     <StackPanel HorizontalAlignment="Center"

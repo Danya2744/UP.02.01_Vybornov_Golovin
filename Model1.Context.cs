@@ -30,6 +30,7 @@ namespace UP._02._01_Vybornov
         public virtual DbSet<city_event> city_event { get; set; }
         public virtual DbSet<countries> countries { get; set; }
         public virtual DbSet<directions> directions { get; set; }
+        public virtual DbSet<event_registrations> event_registrations { get; set; }
         public virtual DbSet<events> events { get; set; }
         public virtual DbSet<genders> genders { get; set; }
         public virtual DbSet<jury_activities> jury_activities { get; set; }

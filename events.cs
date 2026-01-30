@@ -19,6 +19,7 @@ namespace UP._02._01_Vybornov
         {
             this.activities = new HashSet<activities>();
             this.city_event = new HashSet<city_event>();
+            this.event_registrations = new HashSet<event_registrations>();
         }
     
         public int event_id { get; set; }
@@ -35,5 +36,7 @@ namespace UP._02._01_Vybornov
         public virtual ICollection<activities> activities { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<city_event> city_event { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<event_registrations> event_registrations { get; set; }
     }
 }

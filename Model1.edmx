@@ -49,6 +49,16 @@
           <Property Name="direction_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="direction_name" Type="nvarchar" MaxLength="100" Nullable="false" />
         </EntityType>
+        <EntityType Name="event_registrations">
+          <Key>
+            <PropertyRef Name="registration_id" />
+          </Key>
+          <Property Name="registration_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="event_id" Type="int" Nullable="false" />
+          <Property Name="user_id" Type="int" Nullable="false" />
+          <Property Name="registration_date" Type="datetime" Nullable="false" />
+          <Property Name="status" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
         <EntityType Name="events">
           <Key>
             <PropertyRef Name="event_id" />
@@ -230,6 +240,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_event_registrations_events">
+          <End Role="events" Type="Self.events" Multiplicity="1" />
+          <End Role="event_registrations" Type="Self.event_registrations" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="events">
+              <PropertyRef Name="event_id" />
+            </Principal>
+            <Dependent Role="event_registrations">
+              <PropertyRef Name="event_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_event_registrations_users">
+          <End Role="users" Type="Self.users" Multiplicity="1" />
+          <End Role="event_registrations" Type="Self.event_registrations" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="users">
+              <PropertyRef Name="user_id" />
+            </Principal>
+            <Dependent Role="event_registrations">
+              <PropertyRef Name="user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_users_directions">
           <End Role="directions" Type="Self.directions" Multiplicity="0..1" />
           <End Role="users" Type="Self.users" Multiplicity="*" />
@@ -248,6 +282,7 @@
           <EntitySet Name="city_event" EntityType="Self.city_event" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="countries" EntityType="Self.countries" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="directions" EntityType="Self.directions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="event_registrations" EntityType="Self.event_registrations" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="events" EntityType="Self.events" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="genders" EntityType="Self.genders" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="jury_activities" EntityType="Self.jury_activities" Schema="dbo" store:Type="Tables" />
@@ -293,6 +328,14 @@
           <AssociationSet Name="FK_city_event_city_event" Association="Self.FK_city_event_city_event">
             <End Role="events" EntitySet="events" />
             <End Role="city_event" EntitySet="city_event" />
+          </AssociationSet>
+          <AssociationSet Name="FK_event_registrations_events" Association="Self.FK_event_registrations_events">
+            <End Role="events" EntitySet="events" />
+            <End Role="event_registrations" EntitySet="event_registrations" />
+          </AssociationSet>
+          <AssociationSet Name="FK_event_registrations_users" Association="Self.FK_event_registrations_users">
+            <End Role="users" EntitySet="users" />
+            <End Role="event_registrations" EntitySet="event_registrations" />
           </AssociationSet>
           <AssociationSet Name="FK_users_directions" Association="Self.FK_users_directions">
             <End Role="directions" EntitySet="directions" />
@@ -356,6 +399,18 @@
           <Property Name="direction_name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="users" Relationship="Self.FK_users_directions" FromRole="directions" ToRole="users" />
         </EntityType>
+        <EntityType Name="event_registrations">
+          <Key>
+            <PropertyRef Name="registration_id" />
+          </Key>
+          <Property Name="registration_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="event_id" Type="Int32" Nullable="false" />
+          <Property Name="user_id" Type="Int32" Nullable="false" />
+          <Property Name="registration_date" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="events" Relationship="Self.FK_event_registrations_events" FromRole="event_registrations" ToRole="events" />
+          <NavigationProperty Name="users" Relationship="Self.FK_event_registrations_users" FromRole="event_registrations" ToRole="users" />
+        </EntityType>
         <EntityType Name="events">
           <Key>
             <PropertyRef Name="event_id" />
@@ -371,6 +426,7 @@
           <Property Name="organizer_id" Type="Int32" />
           <NavigationProperty Name="activities" Relationship="Self.FK__activitie__event__5441852A" FromRole="events" ToRole="activities" />
           <NavigationProperty Name="city_event" Relationship="Self.FK_city_event_city_event" FromRole="events" ToRole="city_event" />
+          <NavigationProperty Name="event_registrations" Relationship="Self.FK_event_registrations_events" FromRole="events" ToRole="event_registrations" />
         </EntityType>
         <EntityType Name="genders">
           <Key>
@@ -426,6 +482,7 @@
           <Property Name="direction_id" Type="Int32" />
           <NavigationProperty Name="countries" Relationship="Self.FK__users__country_i__5AEE82B9" FromRole="users" ToRole="countries" />
           <NavigationProperty Name="directions" Relationship="Self.FK_users_directions" FromRole="users" ToRole="directions" />
+          <NavigationProperty Name="event_registrations" Relationship="Self.FK_event_registrations_users" FromRole="users" ToRole="event_registrations" />
           <NavigationProperty Name="genders" Relationship="Self.FK__users__gender_id__5BE2A6F2" FromRole="users" ToRole="genders" />
           <NavigationProperty Name="jury_activities" Relationship="Self.FK__jury_acti__jury___5812160E" FromRole="users" ToRole="jury_activities" />
           <NavigationProperty Name="moderator_activities" Relationship="Self.FK__moderator__moder__59FA5E80" FromRole="users" ToRole="moderator_activities" />
@@ -515,6 +572,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_event_registrations_events">
+          <End Role="events" Type="Self.events" Multiplicity="1" />
+          <End Role="event_registrations" Type="Self.event_registrations" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="events">
+              <PropertyRef Name="event_id" />
+            </Principal>
+            <Dependent Role="event_registrations">
+              <PropertyRef Name="event_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_event_registrations_users">
+          <End Role="users" Type="Self.users" Multiplicity="1" />
+          <End Role="event_registrations" Type="Self.event_registrations" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="users">
+              <PropertyRef Name="user_id" />
+            </Principal>
+            <Dependent Role="event_registrations">
+              <PropertyRef Name="user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK__users__gender_id__5BE2A6F2">
           <End Role="genders" Type="Self.genders" Multiplicity="0..1" />
           <End Role="users" Type="Self.users" Multiplicity="*" />
@@ -569,6 +650,7 @@
           <EntitySet Name="city_event" EntityType="Self.city_event" />
           <EntitySet Name="countries" EntityType="Self.countries" />
           <EntitySet Name="directions" EntityType="Self.directions" />
+          <EntitySet Name="event_registrations" EntityType="Self.event_registrations" />
           <EntitySet Name="events" EntityType="Self.events" />
           <EntitySet Name="genders" EntityType="Self.genders" />
           <EntitySet Name="jury_activities" EntityType="Self.jury_activities" />
@@ -602,6 +684,14 @@
           <AssociationSet Name="FK_users_directions" Association="Self.FK_users_directions">
             <End Role="directions" EntitySet="directions" />
             <End Role="users" EntitySet="users" />
+          </AssociationSet>
+          <AssociationSet Name="FK_event_registrations_events" Association="Self.FK_event_registrations_events">
+            <End Role="events" EntitySet="events" />
+            <End Role="event_registrations" EntitySet="event_registrations" />
+          </AssociationSet>
+          <AssociationSet Name="FK_event_registrations_users" Association="Self.FK_event_registrations_users">
+            <End Role="users" EntitySet="users" />
+            <End Role="event_registrations" EntitySet="event_registrations" />
           </AssociationSet>
           <AssociationSet Name="FK__users__gender_id__5BE2A6F2" Association="Self.FK__users__gender_id__5BE2A6F2">
             <End Role="genders" EntitySet="genders" />
@@ -672,6 +762,17 @@
               <MappingFragment StoreEntitySet="directions">
                 <ScalarProperty Name="direction_id" ColumnName="direction_id" />
                 <ScalarProperty Name="direction_name" ColumnName="direction_name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="event_registrations">
+            <EntityTypeMapping TypeName="ConferenceDBModel.event_registrations">
+              <MappingFragment StoreEntitySet="event_registrations">
+                <ScalarProperty Name="registration_id" ColumnName="registration_id" />
+                <ScalarProperty Name="event_id" ColumnName="event_id" />
+                <ScalarProperty Name="user_id" ColumnName="user_id" />
+                <ScalarProperty Name="registration_date" ColumnName="registration_date" />
+                <ScalarProperty Name="status" ColumnName="status" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

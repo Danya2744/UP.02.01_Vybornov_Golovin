@@ -17,6 +17,7 @@ namespace UP._02._01_Vybornov
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public users()
         {
+            this.event_registrations = new HashSet<event_registrations>();
             this.jury_activities = new HashSet<jury_activities>();
             this.moderator_activities = new HashSet<moderator_activities>();
         }
@@ -36,6 +37,8 @@ namespace UP._02._01_Vybornov
     
         public virtual countries countries { get; set; }
         public virtual directions directions { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<event_registrations> event_registrations { get; set; }
         public virtual genders genders { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<jury_activities> jury_activities { get; set; }

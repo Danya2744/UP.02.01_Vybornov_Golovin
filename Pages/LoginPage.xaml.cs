@@ -20,7 +20,7 @@ namespace UP._02._01_Vybornov.Pages
     {
         public event EventHandler<UserLoggedInEventArgs> UserLoggedIn;
         public event EventHandler GuestLoggedIn;
-
+        public int ReturnToEventId { get; set; } = 0;
         public LoginPage()
         {
             InitializeComponent();
@@ -62,7 +62,7 @@ namespace UP._02._01_Vybornov.Pages
                         string roleName = role?.role_name ?? "участник";
 
                         ShowSuccessMessage($"Добро пожаловать, {user.full_name}!\nРоль: {CapitalizeFirstLetter(roleName)}");
-                        
+
                         OnUserLoggedIn(user, roleName);
                         ClearFields();
                     }
@@ -130,7 +130,7 @@ namespace UP._02._01_Vybornov.Pages
         {
             if (string.IsNullOrEmpty(text))
                 return text;
-            
+
             return char.ToUpper(text[0]) + text.Substring(1);
         }
 
@@ -177,7 +177,6 @@ namespace UP._02._01_Vybornov.Pages
             GuestLoggedIn?.Invoke(this, EventArgs.Empty);
         }
     }
-
     public class UserLoggedInEventArgs : EventArgs
     {
         public users User { get; }
