@@ -120,7 +120,7 @@
           <Property Name="role_id" Type="int" Nullable="false" />
           <Property Name="direction_id" Type="int" />
         </EntityType>
-        <Association Name="FK__activitie__event__5441852A">
+        <Association Name="FK__activitie__event__59063A47">
           <End Role="events" Type="Self.events" Multiplicity="1" />
           <End Role="activities" Type="Self.activities" Multiplicity="*" />
           <ReferentialConstraint>
@@ -132,7 +132,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__jury_acti__activ__571DF1D5">
+        <Association Name="FK__jury_acti__activ__5DCAEF64">
           <End Role="activities" Type="Self.activities" Multiplicity="1" />
           <End Role="jury_activities" Type="Self.jury_activities" Multiplicity="*" />
           <ReferentialConstraint>
@@ -144,7 +144,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__jury_acti__jury___5812160E">
+        <Association Name="FK__jury_acti__jury___5EBF139D">
           <End Role="users" Type="Self.users" Multiplicity="1" />
           <End Role="jury_activities" Type="Self.jury_activities" Multiplicity="*" />
           <ReferentialConstraint>
@@ -156,7 +156,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__moderator__activ__59063A47">
+        <Association Name="FK__moderator__activ__5FB337D6">
           <End Role="activities" Type="Self.activities" Multiplicity="1" />
           <End Role="moderator_activities" Type="Self.moderator_activities" Multiplicity="*" />
           <ReferentialConstraint>
@@ -168,7 +168,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__moderator__moder__59FA5E80">
+        <Association Name="FK__moderator__moder__60A75C0F">
           <End Role="users" Type="Self.users" Multiplicity="1" />
           <End Role="moderator_activities" Type="Self.moderator_activities" Multiplicity="*" />
           <ReferentialConstraint>
@@ -180,7 +180,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__users__country_i__5AEE82B9">
+        <Association Name="FK__users__country_i__619B8048">
           <End Role="countries" Type="Self.countries" Multiplicity="0..1" />
           <End Role="users" Type="Self.users" Multiplicity="*" />
           <ReferentialConstraint>
@@ -192,7 +192,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__users__gender_id__5BE2A6F2">
+        <Association Name="FK__users__gender_id__628FA481">
           <End Role="genders" Type="Self.genders" Multiplicity="0..1" />
           <End Role="users" Type="Self.users" Multiplicity="*" />
           <ReferentialConstraint>
@@ -204,7 +204,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__users__role_id__5CD6CB2B">
+        <Association Name="FK__users__role_id__6383C8BA">
           <End Role="roles" Type="Self.roles" Multiplicity="1" />
           <End Role="users" Type="Self.users" Multiplicity="*" />
           <ReferentialConstraint>
@@ -289,35 +289,35 @@
           <EntitySet Name="moderator_activities" EntityType="Self.moderator_activities" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="roles" EntityType="Self.roles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="users" EntityType="Self.users" Schema="dbo" store:Type="Tables" />
-          <AssociationSet Name="FK__activitie__event__5441852A" Association="Self.FK__activitie__event__5441852A">
+          <AssociationSet Name="FK__activitie__event__59063A47" Association="Self.FK__activitie__event__59063A47">
             <End Role="events" EntitySet="events" />
             <End Role="activities" EntitySet="activities" />
           </AssociationSet>
-          <AssociationSet Name="FK__jury_acti__activ__571DF1D5" Association="Self.FK__jury_acti__activ__571DF1D5">
+          <AssociationSet Name="FK__jury_acti__activ__5DCAEF64" Association="Self.FK__jury_acti__activ__5DCAEF64">
             <End Role="activities" EntitySet="activities" />
             <End Role="jury_activities" EntitySet="jury_activities" />
           </AssociationSet>
-          <AssociationSet Name="FK__jury_acti__jury___5812160E" Association="Self.FK__jury_acti__jury___5812160E">
+          <AssociationSet Name="FK__jury_acti__jury___5EBF139D" Association="Self.FK__jury_acti__jury___5EBF139D">
             <End Role="users" EntitySet="users" />
             <End Role="jury_activities" EntitySet="jury_activities" />
           </AssociationSet>
-          <AssociationSet Name="FK__moderator__activ__59063A47" Association="Self.FK__moderator__activ__59063A47">
+          <AssociationSet Name="FK__moderator__activ__5FB337D6" Association="Self.FK__moderator__activ__5FB337D6">
             <End Role="activities" EntitySet="activities" />
             <End Role="moderator_activities" EntitySet="moderator_activities" />
           </AssociationSet>
-          <AssociationSet Name="FK__moderator__moder__59FA5E80" Association="Self.FK__moderator__moder__59FA5E80">
+          <AssociationSet Name="FK__moderator__moder__60A75C0F" Association="Self.FK__moderator__moder__60A75C0F">
             <End Role="users" EntitySet="users" />
             <End Role="moderator_activities" EntitySet="moderator_activities" />
           </AssociationSet>
-          <AssociationSet Name="FK__users__country_i__5AEE82B9" Association="Self.FK__users__country_i__5AEE82B9">
+          <AssociationSet Name="FK__users__country_i__619B8048" Association="Self.FK__users__country_i__619B8048">
             <End Role="countries" EntitySet="countries" />
             <End Role="users" EntitySet="users" />
           </AssociationSet>
-          <AssociationSet Name="FK__users__gender_id__5BE2A6F2" Association="Self.FK__users__gender_id__5BE2A6F2">
+          <AssociationSet Name="FK__users__gender_id__628FA481" Association="Self.FK__users__gender_id__628FA481">
             <End Role="genders" EntitySet="genders" />
             <End Role="users" EntitySet="users" />
           </AssociationSet>
-          <AssociationSet Name="FK__users__role_id__5CD6CB2B" Association="Self.FK__users__role_id__5CD6CB2B">
+          <AssociationSet Name="FK__users__role_id__6383C8BA" Association="Self.FK__users__role_id__6383C8BA">
             <End Role="roles" EntitySet="roles" />
             <End Role="users" EntitySet="users" />
           </AssociationSet>
@@ -358,9 +358,9 @@
           <Property Name="activity_day" Type="Int32" Nullable="false" />
           <Property Name="start_time" Type="Time" Nullable="false" Precision="7" />
           <Property Name="duration_minutes" Type="Int32" />
-          <NavigationProperty Name="events" Relationship="Self.FK__activitie__event__5441852A" FromRole="activities" ToRole="events" />
-          <NavigationProperty Name="jury_activities" Relationship="Self.FK__jury_acti__activ__571DF1D5" FromRole="activities" ToRole="jury_activities" />
-          <NavigationProperty Name="moderator_activities" Relationship="Self.FK__moderator__activ__59063A47" FromRole="activities" ToRole="moderator_activities" />
+          <NavigationProperty Name="events" Relationship="Self.FK__activitie__event__59063A47" FromRole="activities" ToRole="events" />
+          <NavigationProperty Name="jury_activities" Relationship="Self.FK__jury_acti__activ__5DCAEF64" FromRole="activities" ToRole="jury_activities" />
+          <NavigationProperty Name="moderator_activities" Relationship="Self.FK__moderator__activ__5FB337D6" FromRole="activities" ToRole="moderator_activities" />
         </EntityType>
         <EntityType Name="cities">
           <Key>
@@ -389,7 +389,7 @@
           <Property Name="english_name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="country_code" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="country_code2" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="users" Relationship="Self.FK__users__country_i__5AEE82B9" FromRole="countries" ToRole="users" />
+          <NavigationProperty Name="users" Relationship="Self.FK__users__country_i__619B8048" FromRole="countries" ToRole="users" />
         </EntityType>
         <EntityType Name="directions">
           <Key>
@@ -424,7 +424,7 @@
           <Property Name="logo_path" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="organizer_id" Type="Int32" />
-          <NavigationProperty Name="activities" Relationship="Self.FK__activitie__event__5441852A" FromRole="events" ToRole="activities" />
+          <NavigationProperty Name="activities" Relationship="Self.FK__activitie__event__59063A47" FromRole="events" ToRole="activities" />
           <NavigationProperty Name="city_event" Relationship="Self.FK_city_event_city_event" FromRole="events" ToRole="city_event" />
           <NavigationProperty Name="event_registrations" Relationship="Self.FK_event_registrations_events" FromRole="events" ToRole="event_registrations" />
         </EntityType>
@@ -434,7 +434,7 @@
           </Key>
           <Property Name="gender_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="gender_name" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="users" Relationship="Self.FK__users__gender_id__5BE2A6F2" FromRole="genders" ToRole="users" />
+          <NavigationProperty Name="users" Relationship="Self.FK__users__gender_id__628FA481" FromRole="genders" ToRole="users" />
         </EntityType>
         <EntityType Name="jury_activities">
           <Key>
@@ -443,8 +443,8 @@
           <Property Name="jury_activity_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="activity_id" Type="Int32" Nullable="false" />
           <Property Name="jury_id" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="activities" Relationship="Self.FK__jury_acti__activ__571DF1D5" FromRole="jury_activities" ToRole="activities" />
-          <NavigationProperty Name="users" Relationship="Self.FK__jury_acti__jury___5812160E" FromRole="jury_activities" ToRole="users" />
+          <NavigationProperty Name="activities" Relationship="Self.FK__jury_acti__activ__5DCAEF64" FromRole="jury_activities" ToRole="activities" />
+          <NavigationProperty Name="users" Relationship="Self.FK__jury_acti__jury___5EBF139D" FromRole="jury_activities" ToRole="users" />
         </EntityType>
         <EntityType Name="moderator_activities">
           <Key>
@@ -453,8 +453,8 @@
           <Property Name="moderator_activity_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="activity_id" Type="Int32" Nullable="false" />
           <Property Name="moderator_id" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="activities" Relationship="Self.FK__moderator__activ__59063A47" FromRole="moderator_activities" ToRole="activities" />
-          <NavigationProperty Name="users" Relationship="Self.FK__moderator__moder__59FA5E80" FromRole="moderator_activities" ToRole="users" />
+          <NavigationProperty Name="activities" Relationship="Self.FK__moderator__activ__5FB337D6" FromRole="moderator_activities" ToRole="activities" />
+          <NavigationProperty Name="users" Relationship="Self.FK__moderator__moder__60A75C0F" FromRole="moderator_activities" ToRole="users" />
         </EntityType>
         <EntityType Name="roles">
           <Key>
@@ -462,7 +462,7 @@
           </Key>
           <Property Name="role_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="role_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="users" Relationship="Self.FK__users__role_id__5CD6CB2B" FromRole="roles" ToRole="users" />
+          <NavigationProperty Name="users" Relationship="Self.FK__users__role_id__6383C8BA" FromRole="roles" ToRole="users" />
         </EntityType>
         <EntityType Name="users">
           <Key>
@@ -480,15 +480,15 @@
           <Property Name="gender_id" Type="Int32" />
           <Property Name="role_id" Type="Int32" Nullable="false" />
           <Property Name="direction_id" Type="Int32" />
-          <NavigationProperty Name="countries" Relationship="Self.FK__users__country_i__5AEE82B9" FromRole="users" ToRole="countries" />
+          <NavigationProperty Name="countries" Relationship="Self.FK__users__country_i__619B8048" FromRole="users" ToRole="countries" />
           <NavigationProperty Name="directions" Relationship="Self.FK_users_directions" FromRole="users" ToRole="directions" />
           <NavigationProperty Name="event_registrations" Relationship="Self.FK_event_registrations_users" FromRole="users" ToRole="event_registrations" />
-          <NavigationProperty Name="genders" Relationship="Self.FK__users__gender_id__5BE2A6F2" FromRole="users" ToRole="genders" />
-          <NavigationProperty Name="jury_activities" Relationship="Self.FK__jury_acti__jury___5812160E" FromRole="users" ToRole="jury_activities" />
-          <NavigationProperty Name="moderator_activities" Relationship="Self.FK__moderator__moder__59FA5E80" FromRole="users" ToRole="moderator_activities" />
-          <NavigationProperty Name="roles" Relationship="Self.FK__users__role_id__5CD6CB2B" FromRole="users" ToRole="roles" />
+          <NavigationProperty Name="genders" Relationship="Self.FK__users__gender_id__628FA481" FromRole="users" ToRole="genders" />
+          <NavigationProperty Name="jury_activities" Relationship="Self.FK__jury_acti__jury___5EBF139D" FromRole="users" ToRole="jury_activities" />
+          <NavigationProperty Name="moderator_activities" Relationship="Self.FK__moderator__moder__60A75C0F" FromRole="users" ToRole="moderator_activities" />
+          <NavigationProperty Name="roles" Relationship="Self.FK__users__role_id__6383C8BA" FromRole="users" ToRole="roles" />
         </EntityType>
-        <Association Name="FK__activitie__event__5441852A">
+        <Association Name="FK__activitie__event__59063A47">
           <End Role="events" Type="Self.events" Multiplicity="1" />
           <End Role="activities" Type="Self.activities" Multiplicity="*" />
           <ReferentialConstraint>
@@ -500,7 +500,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__jury_acti__activ__571DF1D5">
+        <Association Name="FK__jury_acti__activ__5DCAEF64">
           <End Role="activities" Type="Self.activities" Multiplicity="1" />
           <End Role="jury_activities" Type="Self.jury_activities" Multiplicity="*" />
           <ReferentialConstraint>
@@ -512,7 +512,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__moderator__activ__59063A47">
+        <Association Name="FK__moderator__activ__5FB337D6">
           <End Role="activities" Type="Self.activities" Multiplicity="1" />
           <End Role="moderator_activities" Type="Self.moderator_activities" Multiplicity="*" />
           <ReferentialConstraint>
@@ -548,7 +548,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__users__country_i__5AEE82B9">
+        <Association Name="FK__users__country_i__619B8048">
           <End Role="countries" Type="Self.countries" Multiplicity="0..1" />
           <End Role="users" Type="Self.users" Multiplicity="*" />
           <ReferentialConstraint>
@@ -596,7 +596,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__users__gender_id__5BE2A6F2">
+        <Association Name="FK__users__gender_id__628FA481">
           <End Role="genders" Type="Self.genders" Multiplicity="0..1" />
           <End Role="users" Type="Self.users" Multiplicity="*" />
           <ReferentialConstraint>
@@ -608,7 +608,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__jury_acti__jury___5812160E">
+        <Association Name="FK__jury_acti__jury___5EBF139D">
           <End Role="users" Type="Self.users" Multiplicity="1" />
           <End Role="jury_activities" Type="Self.jury_activities" Multiplicity="*" />
           <ReferentialConstraint>
@@ -620,7 +620,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__moderator__moder__59FA5E80">
+        <Association Name="FK__moderator__moder__60A75C0F">
           <End Role="users" Type="Self.users" Multiplicity="1" />
           <End Role="moderator_activities" Type="Self.moderator_activities" Multiplicity="*" />
           <ReferentialConstraint>
@@ -632,7 +632,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__users__role_id__5CD6CB2B">
+        <Association Name="FK__users__role_id__6383C8BA">
           <End Role="roles" Type="Self.roles" Multiplicity="1" />
           <End Role="users" Type="Self.users" Multiplicity="*" />
           <ReferentialConstraint>
@@ -657,15 +657,15 @@
           <EntitySet Name="moderator_activities" EntityType="Self.moderator_activities" />
           <EntitySet Name="roles" EntityType="Self.roles" />
           <EntitySet Name="users" EntityType="Self.users" />
-          <AssociationSet Name="FK__activitie__event__5441852A" Association="Self.FK__activitie__event__5441852A">
+          <AssociationSet Name="FK__activitie__event__59063A47" Association="Self.FK__activitie__event__59063A47">
             <End Role="events" EntitySet="events" />
             <End Role="activities" EntitySet="activities" />
           </AssociationSet>
-          <AssociationSet Name="FK__jury_acti__activ__571DF1D5" Association="Self.FK__jury_acti__activ__571DF1D5">
+          <AssociationSet Name="FK__jury_acti__activ__5DCAEF64" Association="Self.FK__jury_acti__activ__5DCAEF64">
             <End Role="activities" EntitySet="activities" />
             <End Role="jury_activities" EntitySet="jury_activities" />
           </AssociationSet>
-          <AssociationSet Name="FK__moderator__activ__59063A47" Association="Self.FK__moderator__activ__59063A47">
+          <AssociationSet Name="FK__moderator__activ__5FB337D6" Association="Self.FK__moderator__activ__5FB337D6">
             <End Role="activities" EntitySet="activities" />
             <End Role="moderator_activities" EntitySet="moderator_activities" />
           </AssociationSet>
@@ -677,7 +677,7 @@
             <End Role="events" EntitySet="events" />
             <End Role="city_event" EntitySet="city_event" />
           </AssociationSet>
-          <AssociationSet Name="FK__users__country_i__5AEE82B9" Association="Self.FK__users__country_i__5AEE82B9">
+          <AssociationSet Name="FK__users__country_i__619B8048" Association="Self.FK__users__country_i__619B8048">
             <End Role="countries" EntitySet="countries" />
             <End Role="users" EntitySet="users" />
           </AssociationSet>
@@ -693,19 +693,19 @@
             <End Role="users" EntitySet="users" />
             <End Role="event_registrations" EntitySet="event_registrations" />
           </AssociationSet>
-          <AssociationSet Name="FK__users__gender_id__5BE2A6F2" Association="Self.FK__users__gender_id__5BE2A6F2">
+          <AssociationSet Name="FK__users__gender_id__628FA481" Association="Self.FK__users__gender_id__628FA481">
             <End Role="genders" EntitySet="genders" />
             <End Role="users" EntitySet="users" />
           </AssociationSet>
-          <AssociationSet Name="FK__jury_acti__jury___5812160E" Association="Self.FK__jury_acti__jury___5812160E">
+          <AssociationSet Name="FK__jury_acti__jury___5EBF139D" Association="Self.FK__jury_acti__jury___5EBF139D">
             <End Role="users" EntitySet="users" />
             <End Role="jury_activities" EntitySet="jury_activities" />
           </AssociationSet>
-          <AssociationSet Name="FK__moderator__moder__59FA5E80" Association="Self.FK__moderator__moder__59FA5E80">
+          <AssociationSet Name="FK__moderator__moder__60A75C0F" Association="Self.FK__moderator__moder__60A75C0F">
             <End Role="users" EntitySet="users" />
             <End Role="moderator_activities" EntitySet="moderator_activities" />
           </AssociationSet>
-          <AssociationSet Name="FK__users__role_id__5CD6CB2B" Association="Self.FK__users__role_id__5CD6CB2B">
+          <AssociationSet Name="FK__users__role_id__6383C8BA" Association="Self.FK__users__role_id__6383C8BA">
             <End Role="roles" EntitySet="roles" />
             <End Role="users" EntitySet="users" />
           </AssociationSet>

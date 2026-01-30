@@ -1,0 +1,222 @@
+﻿<Window x:Class="UP._02._01_Vybornov.Pages.AddEditActivityWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Добавление активности" 
+        Height="600" 
+        Width="500"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        FontFamily="Comic Sans MS">
+
+    <Window.Resources>
+        <SolidColorBrush x:Key="PrimaryBackground" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="SecondaryBackground" Color="#ABCFCE"/>
+        <SolidColorBrush x:Key="AccentColor" Color="#546F94"/>
+        <SolidColorBrush x:Key="TextColor" Color="#000000"/>
+        <SolidColorBrush x:Key="SecondaryTextColor" Color="#666666"/>
+        <SolidColorBrush x:Key="BorderColor" Color="#DDDDDD"/>
+        <SolidColorBrush x:Key="ErrorColor" Color="#F44336"/>
+        <SolidColorBrush x:Key="SuccessColor" Color="#4CAF50"/>
+
+        <Style x:Key="FormLabelStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+            <Setter Property="Margin" Value="0,15,0,5"/>
+        </Style>
+
+        <Style x:Key="FormInputStyle" TargetType="TextBox">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+        </Style>
+
+        <Style x:Key="FormComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+        </Style>
+
+        <Style x:Key="ErrorTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="{StaticResource ErrorColor}"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+            <Setter Property="Visibility" Value="Collapsed"/>
+        </Style>
+
+        <Style x:Key="ActionButtonStyle" TargetType="Button">
+            <Setter Property="Margin" Value="10,0,0,0"/>
+            <Setter Property="Padding" Value="15,8"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Background="{StaticResource SecondaryBackground}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Заголовок -->
+        <Border Grid.Row="0" 
+                Background="{StaticResource PrimaryBackground}" 
+                Padding="15"
+                BorderBrush="{StaticResource BorderColor}"
+                BorderThickness="0,0,0,1">
+            <TextBlock x:Name="TitleTextBlock" 
+                      Text="Добавление активности" 
+                      FontSize="18" 
+                      FontWeight="Bold"
+                      HorizontalAlignment="Center"/>
+        </Border>
+
+        <!-- Форма -->
+        <ScrollViewer Grid.Row="1" 
+                     VerticalScrollBarVisibility="Auto"
+                     Padding="20">
+            <StackPanel>
+                <!-- ID (только для редактирования) -->
+                <TextBlock x:Name="ActivityIdLabel" 
+                          Text="ID активности:" 
+                          Style="{StaticResource FormLabelStyle}"
+                          Visibility="Collapsed"/>
+                <TextBox x:Name="ActivityIdTextBox"
+                        Style="{StaticResource FormInputStyle}"
+                        IsReadOnly="True"
+                        Visibility="Collapsed"/>
+
+                <!-- Название -->
+                <TextBlock Text="Название активности:*" 
+                          Style="{StaticResource FormLabelStyle}"/>
+                <TextBox x:Name="NameTextBox"
+                        Style="{StaticResource FormInputStyle}"
+                        MaxLength="200"/>
+                <TextBlock x:Name="NameErrorText"
+                          Style="{StaticResource ErrorTextStyle}"
+                          Text="Название обязательно для заполнения"/>
+
+                <!-- Описание -->
+                <TextBlock Text="Описание:" 
+                          Style="{StaticResource FormLabelStyle}"/>
+                <TextBox x:Name="DescriptionTextBox"
+                        Style="{StaticResource FormInputStyle}"
+                        MaxLength="4000"
+                        Height="100"
+                        VerticalScrollBarVisibility="Auto"
+                        TextWrapping="Wrap"
+                        AcceptsReturn="True"/>
+
+                <!-- Мероприятие -->
+                <TextBlock Text="Мероприятие:*" 
+                          Style="{StaticResource FormLabelStyle}"/>
+                <ComboBox x:Name="EventComboBox"
+                         Style="{StaticResource FormComboBoxStyle}"
+                         DisplayMemberPath="event_name"
+                         SelectionChanged="EventComboBox_SelectionChanged"/>
+                <TextBlock x:Name="EventErrorText"
+                          Style="{StaticResource ErrorTextStyle}"
+                          Text="Выберите мероприятие"/>
+
+                <!-- День мероприятия -->
+                <TextBlock Text="День мероприятия:*" 
+                          Style="{StaticResource FormLabelStyle}"/>
+                <ComboBox x:Name="DayComboBox"
+                         Style="{StaticResource FormComboBoxStyle}"
+                         DropDownClosed="DayComboBox_DropDownClosed">
+                    <ComboBox.ToolTip>
+                        <ToolTip>
+                            День мероприятия, начиная с 1
+                        </ToolTip>
+                    </ComboBox.ToolTip>
+                </ComboBox>
+                <TextBlock x:Name="DayErrorText"
+                          Style="{StaticResource ErrorTextStyle}"
+                          Text="Выберите день мероприятия"/>
+
+                <!-- Время начала -->
+                <TextBlock Text="Время начала:*" 
+                          Style="{StaticResource FormLabelStyle}"/>
+                <ComboBox x:Name="TimeComboBox"
+                         Style="{StaticResource FormComboBoxStyle}">
+                    <ComboBox.ToolTip>
+                        <ToolTip>
+                            Доступное время с учетом 15-минутных перерывов между активностями
+                        </ToolTip>
+                    </ComboBox.ToolTip>
+                </ComboBox>
+                <TextBlock x:Name="TimeErrorText"
+                          Style="{StaticResource ErrorTextStyle}"
+                          Text="Выберите время начала"/>
+
+                <!-- Продолжительность -->
+                <TextBlock Text="Продолжительность:" 
+                          Style="{StaticResource FormLabelStyle}"/>
+                <TextBox x:Name="DurationTextBox"
+                        Style="{StaticResource FormInputStyle}"
+                        Text="90 минут"
+                        IsReadOnly="True"
+                        Background="#F5F5F5">
+                    <TextBox.ToolTip>
+                        <ToolTip>
+                            Фиксированная продолжительность активности - 90 минут
+                        </ToolTip>
+                    </TextBox.ToolTip>
+                </TextBox>
+
+                <!-- Информация о доступном времени -->
+                <Border Background="#E8F5E9"
+                        BorderBrush="#4CAF50"
+                        BorderThickness="1"
+                        CornerRadius="4"
+                        Padding="10"
+                        Margin="0,20,0,10"
+                        Visibility="Collapsed"
+                        x:Name="TimeInfoBorder">
+                    <StackPanel>
+                        <TextBlock Text="ℹ️ Информация о доступном времени"
+                                  FontWeight="Bold"
+                                  Foreground="#2E7D32"
+                                  Margin="0,0,0,5"/>
+                        <TextBlock x:Name="TimeInfoText"
+                                  FontSize="12"
+                                  Foreground="#2E7D32"
+                                  TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Кнопки -->
+        <Border Grid.Row="2" 
+                Background="{StaticResource PrimaryBackground}" 
+                Padding="15"
+                BorderBrush="{StaticResource BorderColor}"
+                BorderThickness="0,1,0,0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button x:Name="CancelButton"
+                        Content="Отмена"
+                        Click="CancelButton_Click"
+                        Style="{StaticResource ActionButtonStyle}"
+                        Background="{StaticResource SecondaryBackground}"
+                        Foreground="{StaticResource TextColor}"/>
+
+                <Button x:Name="SaveButton"
+                        Content="Сохранить"
+                        Click="SaveButton_Click"
+                        Style="{StaticResource ActionButtonStyle}"
+                        Background="{StaticResource AccentColor}"
+                        Foreground="White"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

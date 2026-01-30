@@ -1,0 +1,165 @@
+﻿<Page x:Class="UP._02._01_Vybornov.Pages.OrganizerPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      mc:Ignorable="d" 
+      Title="Панель организатора"
+      FontFamily="Comic Sans MS">
+
+    <Page.Resources>
+        <SolidColorBrush x:Key="PrimaryBackground" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="SecondaryBackground" Color="#ABCFCE"/>
+        <SolidColorBrush x:Key="AccentColor" Color="#546F94"/>
+        <SolidColorBrush x:Key="TextColor" Color="#000000"/>
+        <SolidColorBrush x:Key="SecondaryTextColor" Color="#666666"/>
+        <SolidColorBrush x:Key="BorderColor" Color="#DDDDDD"/>
+
+        <Style x:Key="BackButtonStyle" TargetType="Button">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Background" Value="{StaticResource SecondaryBackground}"/>
+            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
+        <Style x:Key="MenuButtonStyle" TargetType="Button">
+            <Setter Property="Margin" Value="10,5"/>
+            <Setter Property="Padding" Value="15,10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Background" Value="{StaticResource PrimaryBackground}"/>
+            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+    </Page.Resources>
+
+    <Grid Background="{StaticResource SecondaryBackground}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Шапка -->
+        <Border Grid.Row="0" 
+                Background="{StaticResource PrimaryBackground}" 
+                Padding="15"
+                BorderBrush="{StaticResource BorderColor}"
+                BorderThickness="0,0,0,1">
+            <DockPanel>
+                <Button x:Name="BackButton"
+                        Content="← Назад к мероприятиям"
+                        Style="{StaticResource BackButtonStyle}"
+                        Padding="15,8"
+                        Click="BackButton_Click"
+                        DockPanel.Dock="Left"/>
+
+                <TextBlock Text="Панель организатора" 
+                          FontSize="20" 
+                          FontWeight="Bold"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center"/>
+            </DockPanel>
+        </Border>
+
+        <!-- Контент -->
+        <ScrollViewer Grid.Row="1" 
+                     VerticalScrollBarVisibility="Auto"
+                     Padding="20">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="250"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Меню -->
+                <Border Grid.Column="0"
+                        Background="{StaticResource PrimaryBackground}"
+                        BorderBrush="{StaticResource BorderColor}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Margin="0,0,20,0">
+                    <StackPanel>
+                        <TextBlock Text="Меню организатора" 
+                                  FontSize="16"
+                                  FontWeight="Bold"
+                                  Foreground="{StaticResource AccentColor}"
+                                  Margin="15,15,15,10"/>
+
+                        <Button x:Name="EventsManagementButton"
+                                Content="Управление мероприятиями"
+                                Style="{StaticResource MenuButtonStyle}"
+                                Click="EventsManagementButton_Click"/>
+
+                        <Button x:Name="ActivitiesManagementButton"
+                                Content="Управление активностями"
+                                Style="{StaticResource MenuButtonStyle}"
+                                Click="ActivitiesManagementButton_Click"/>
+
+                        <Button x:Name="ProfileButton"
+                                Content="Мой профиль"
+                                Style="{StaticResource MenuButtonStyle}"
+                                Click="ProfileButton_Click"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Информационная панель -->
+                <Border Grid.Column="1"
+                        Background="{StaticResource PrimaryBackground}"
+                        BorderBrush="{StaticResource BorderColor}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="20">
+                    <StackPanel>
+                        <TextBlock x:Name="WelcomeTextBlock"
+                                  FontSize="18"
+                                  FontWeight="Bold"
+                                  Foreground="{StaticResource AccentColor}"
+                                  Margin="0,0,0,20"/>
+
+                        <TextBlock Text="Добро пожаловать в панель организатора!"
+                                  FontSize="16"
+                                  Margin="0,0,0,10"/>
+
+                        <TextBlock Text="Здесь вы можете управлять мероприятиями, активностями и другими аспектами конференции."
+                                  FontSize="14"
+                                  Foreground="{StaticResource SecondaryTextColor}"
+                                  TextWrapping="Wrap"
+                                  Margin="0,0,0,20"/>
+
+                        <Border Background="{StaticResource SecondaryBackground}"
+                                CornerRadius="6"
+                                Padding="15">
+                            <StackPanel>
+                                <TextBlock Text="Доступные функции:"
+                                          FontSize="14"
+                                          FontWeight="Bold"
+                                          Margin="0,0,0,10"/>
+
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                        <TextBlock Text="• " FontWeight="Bold"/>
+                                        <TextBlock Text="Управление мероприятиями"/>
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                        <TextBlock Text="• " FontWeight="Bold"/>
+                                        <TextBlock Text="Управление активностями"/>
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                        <TextBlock Text="• " FontWeight="Bold"/>
+                                        <TextBlock Text="Редактирование профиля"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+</Page>

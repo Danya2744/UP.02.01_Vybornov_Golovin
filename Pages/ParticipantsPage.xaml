@@ -61,6 +61,7 @@
                           FontWeight="Bold"
                           HorizontalAlignment="Center"
                           VerticalAlignment="Center"/>
+
             </DockPanel>
         </Border>
 

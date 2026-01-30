@@ -42,7 +42,30 @@ namespace UP._02._01_Vybornov
             _currentRole = e.RoleName;
 
             UpdateUserInterface(e.User, e.RoleName);
-            NavigateToEventsPage();
+
+            // Если пользователь - организатор, переходим на страницу организатора
+            if (e.RoleName.ToLower() == "организатор")
+            {
+                NavigateToOrganizerPage();
+            }
+            else
+            {
+                NavigateToEventsPage();
+            }
+        }
+
+        // Добавляем метод для перехода на страницу организатора
+        private void NavigateToOrganizerPage()
+        {
+            var organizerPage = new OrganizerPage(_currentUser);
+            MainFrame.Navigate(organizerPage);
+        }
+
+        // Обновляем существующий метод NavigateToEventsPage
+        private void NavigateToEventsPage()
+        {
+            var eventsPage = new EventsPage(_currentUser, _currentRole);
+            MainFrame.Navigate(eventsPage);
         }
 
         private void OnGuestLoggedIn(object sender, EventArgs e)
@@ -122,12 +145,6 @@ namespace UP._02._01_Vybornov
             if (hour >= 12 && hour < 18) return "Добрый день";
             if (hour >= 18 && hour < 23) return "Добрый вечер";
             return "Доброй ночи";
-        }
-
-        private void NavigateToEventsPage()
-        {
-            var eventsPage = new EventsPage(_currentUser, _currentRole);
-            MainFrame.Navigate(eventsPage);
         }
 
         private void LogoutButtonClick(object sender, RoutedEventArgs e)
