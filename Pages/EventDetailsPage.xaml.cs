@@ -33,6 +33,7 @@ namespace UP._02._01_Vybornov.Pages
             ParticipantActionsPanel.Visibility = Visibility.Collapsed;
             ModeratorActionsPanel.Visibility = Visibility.Collapsed;
             JuryActionsPanel.Visibility = Visibility.Collapsed;
+            OrganizerActionsPanel.Visibility = Visibility.Collapsed;
 
             if (_currentUser != null)
             {
@@ -51,7 +52,7 @@ namespace UP._02._01_Vybornov.Pages
                         JuryActionsPanel.Visibility = Visibility.Visible;
                         break;
                     case "организатор":
-                        // У организатора пока нет специальных действий
+                        OrganizerActionsPanel.Visibility = Visibility.Visible;
                         break;
                     default:
                         GuestActionsPanel.Visibility = Visibility.Visible;
@@ -178,7 +179,7 @@ namespace UP._02._01_Vybornov.Pages
 
                     // Обновляем UI
                     EventTitleTextBlock.Text = ev.event_name;
-                    PageTitleTextBlock.Text = ev.event_name;
+                    // PageTitleTextBlock.Text остается "Детали мероприятия" как установлено в XAML
 
                     // Дата
                     if (ev.start_date == ev.end_date)
@@ -530,6 +531,22 @@ namespace UP._02._01_Vybornov.Pages
                     MessageBox.Show($"Ошибка при отмене регистрации: {ex.Message}",
                         "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
+            }
+        }
+
+        // Новый метод для просмотра участников
+        private void ViewParticipantsButtonClick(object sender, RoutedEventArgs e)
+        {
+            // Проверяем, доступна ли эта функция для текущей роли
+            if (_currentUser != null && (_currentRole == "модератор" || _currentRole == "жюри" || _currentRole == "организатор"))
+            {
+                var participantsPage = new ParticipantsPage(_eventId, _currentUser, _currentRole);
+                NavigationService.Navigate(participantsPage);
+            }
+            else
+            {
+                MessageBox.Show("Эта функция доступна только для модераторов, жюри и организаторов",
+                    "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 

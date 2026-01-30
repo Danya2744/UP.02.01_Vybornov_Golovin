@@ -316,6 +316,14 @@
                                         Click="RegisterAsModeratorButton_Click"
                                         Background="{StaticResource WarningColor}"
                                         Foreground="White"/>
+
+                                <Button x:Name="ViewParticipantsModeratorButton"
+                                        Content="Посмотреть участников"
+                                        Style="{StaticResource ActionButtonStyle}"
+                                        Click="ViewParticipantsButtonClick"
+                                        Background="{StaticResource AccentColor}"
+                                        Foreground="White"
+                                        Margin="0,10,0,0"/>
                             </StackPanel>
 
                             <!-- Для жюри -->
@@ -365,6 +373,25 @@
                                         Style="{StaticResource ActionButtonStyle}"
                                         Click="RemoveJuryActivityButton_Click"
                                         Background="{StaticResource ErrorColor}"
+                                        Foreground="White"/>
+
+                                <Button x:Name="ViewParticipantsJuryButton"
+                                        Content="Посмотреть участников"
+                                        Style="{StaticResource ActionButtonStyle}"
+                                        Click="ViewParticipantsButtonClick"
+                                        Background="{StaticResource AccentColor}"
+                                        Foreground="White"
+                                        Margin="0,10,0,0"/>
+                            </StackPanel>
+
+                            <!-- Для организаторов -->
+                            <StackPanel x:Name="OrganizerActionsPanel"
+                                      Visibility="Collapsed">
+                                <Button x:Name="ViewParticipantsOrganizerButton"
+                                        Content="Посмотреть участников"
+                                        Style="{StaticResource ActionButtonStyle}"
+                                        Click="ViewParticipantsButtonClick"
+                                        Background="{StaticResource AccentColor}"
                                         Foreground="White"/>
                             </StackPanel>
 
