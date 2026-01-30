@@ -3,7 +3,6 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:UP._02._01_Vybornov.Pages"
       mc:Ignorable="d" 
       Title="Мой профиль"
       FontFamily="Comic Sans MS">
@@ -15,6 +14,7 @@
         <SolidColorBrush x:Key="TextColor" Color="#000000"/>
         <SolidColorBrush x:Key="SecondaryTextColor" Color="#666666"/>
         <SolidColorBrush x:Key="BorderColor" Color="#DDDDDD"/>
+        <SolidColorBrush x:Key="ErrorColor" Color="#F44336"/>
 
         <Style x:Key="BackButtonStyle" TargetType="Button">
             <Setter Property="Margin" Value="5"/>
@@ -60,6 +60,14 @@
             <Setter Property="Background" Value="#F5F5F5"/>
             <Setter Property="IsReadOnly" Value="True"/>
             <Setter Property="Margin" Value="0,0,0,5"/>
+            <Setter Property="Foreground" Value="{StaticResource SecondaryTextColor}"/>
+        </Style>
+
+        <Style x:Key="ErrorTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="{StaticResource ErrorColor}"/>
+            <Setter Property="Margin" Value="0,0,0,5"/>
+            <Setter Property="Visibility" Value="Collapsed"/>
         </Style>
     </Page.Resources>
 
@@ -128,16 +136,16 @@
                             <TextBox x:Name="IdNumberTextBox"
                                     Style="{StaticResource ReadOnlyFieldStyle}"/>
 
+                            <!-- Email (неизменяемый) -->
+                            <TextBlock Text="Email:" 
+                                      Style="{StaticResource FormLabelStyle}"/>
+                            <TextBox x:Name="EmailTextBox"
+                                    Style="{StaticResource ReadOnlyFieldStyle}"/>
+
                             <!-- Роль -->
                             <TextBlock Text="Роль:" 
                                       Style="{StaticResource FormLabelStyle}"/>
                             <TextBox x:Name="RoleTextBox"
-                                    Style="{StaticResource ReadOnlyFieldStyle}"/>
-
-                            <!-- Дата регистрации -->
-                            <TextBlock Text="Зарегистрирован:" 
-                                      Style="{StaticResource FormLabelStyle}"/>
-                            <TextBox x:Name="RegistrationDateTextBox"
                                     Style="{StaticResource ReadOnlyFieldStyle}"/>
                         </StackPanel>
                     </Border>
@@ -161,19 +169,21 @@
                             <TextBlock Text="ФИО:" 
                                       Style="{StaticResource FormLabelStyle}"/>
                             <TextBox x:Name="FullNameTextBox"
-                                    Style="{StaticResource FormInputStyle}"/>
-
-                            <!-- Email -->
-                            <TextBlock Text="Email:" 
-                                      Style="{StaticResource FormLabelStyle}"/>
-                            <TextBox x:Name="EmailTextBox"
-                                    Style="{StaticResource FormInputStyle}"/>
+                                    Style="{StaticResource FormInputStyle}"
+                                    MaxLength="150"/>
+                            <TextBlock x:Name="FullNameErrorText"
+                                      Style="{StaticResource ErrorTextStyle}"
+                                      Text="Поле ФИО обязательно для заполнения"/>
 
                             <!-- Телефон -->
                             <TextBlock Text="Телефон:" 
                                       Style="{StaticResource FormLabelStyle}"/>
                             <TextBox x:Name="PhoneTextBox"
-                                    Style="{StaticResource FormInputStyle}"/>
+                                    Style="{StaticResource FormInputStyle}"
+                                    MaxLength="20"/>
+                            <TextBlock x:Name="PhoneErrorText"
+                                      Style="{StaticResource ErrorTextStyle}"
+                                      Text="Введите корректный номер телефона (например: +7(999)123-45-67)"/>
 
                             <!-- Дата рождения -->
                             <TextBlock Text="Дата рождения:" 
@@ -183,7 +193,11 @@
                                        Padding="10"
                                        BorderBrush="{StaticResource BorderColor}"
                                        BorderThickness="1"
-                                       Margin="0,0,0,15"/>
+                                       Margin="0,0,0,15"
+                                       SelectedDateFormat="Short"/>
+                            <TextBlock x:Name="BirthDateErrorText"
+                                      Style="{StaticResource ErrorTextStyle}"
+                                      Text="Дата рождения не может быть в будущем"/>
 
                             <!-- Смена пароля -->
                             <TextBlock Text="Смена пароля" 
@@ -201,6 +215,9 @@
                                         BorderBrush="{StaticResource BorderColor}"
                                         BorderThickness="1"
                                         Margin="0,0,0,10"/>
+                            <TextBlock x:Name="CurrentPasswordErrorText"
+                                      Style="{StaticResource ErrorTextStyle}"
+                                      Text="Необходимо ввести текущий пароль"/>
 
                             <!-- Новый пароль -->
                             <TextBlock Text="Новый пароль:" 
@@ -211,6 +228,9 @@
                                         BorderBrush="{StaticResource BorderColor}"
                                         BorderThickness="1"
                                         Margin="0,0,0,10"/>
+                            <TextBlock x:Name="NewPasswordErrorText"
+                                      Style="{StaticResource ErrorTextStyle}"
+                                      Text="Пароль должен содержать минимум 6 символов"/>
 
                             <!-- Повтор нового пароля -->
                             <TextBlock Text="Повторите новый пароль:" 
@@ -221,6 +241,9 @@
                                         BorderBrush="{StaticResource BorderColor}"
                                         BorderThickness="1"
                                         Margin="0,0,0,20"/>
+                            <TextBlock x:Name="ConfirmPasswordErrorText"
+                                      Style="{StaticResource ErrorTextStyle}"
+                                      Text="Пароли не совпадают"/>
 
                             <!-- Кнопки -->
                             <StackPanel Orientation="Horizontal" 
@@ -239,72 +262,6 @@
                                         Margin="10,0,0,0"
                                         Click="SaveButtonClick"/>
                             </StackPanel>
-                        </StackPanel>
-                    </Border>
-
-                    <!-- Статистика -->
-                    <Border Background="{StaticResource PrimaryBackground}"
-                            BorderBrush="{StaticResource BorderColor}"
-                            BorderThickness="1"
-                            CornerRadius="8"
-                            Padding="20"
-                            Margin="0,20,0,0">
-                        <StackPanel>
-                            <TextBlock Text="Моя активность" 
-                                      FontSize="18"
-                                      FontWeight="Bold"
-                                      Foreground="{StaticResource AccentColor}"
-                                      Margin="0,0,0,15"/>
-
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-
-                                <!-- Зарегистрировано мероприятий -->
-                                <StackPanel Grid.Column="0" 
-                                           HorizontalAlignment="Center">
-                                    <TextBlock x:Name="EventsCountText"
-                                              Text="0"
-                                              FontSize="24"
-                                              FontWeight="Bold"
-                                              Foreground="{StaticResource AccentColor}"
-                                              HorizontalAlignment="Center"/>
-                                    <TextBlock Text="мероприятий"
-                                              FontSize="14"
-                                              HorizontalAlignment="Center"/>
-                                </StackPanel>
-
-                                <!-- Активных регистраций -->
-                                <StackPanel Grid.Column="1" 
-                                           HorizontalAlignment="Center">
-                                    <TextBlock x:Name="ActiveEventsText"
-                                              Text="0"
-                                              FontSize="24"
-                                              FontWeight="Bold"
-                                              Foreground="{StaticResource AccentColor}"
-                                              HorizontalAlignment="Center"/>
-                                    <TextBlock Text="активных"
-                                              FontSize="14"
-                                              HorizontalAlignment="Center"/>
-                                </StackPanel>
-
-                                <!-- Посещено мероприятий -->
-                                <StackPanel Grid.Column="2" 
-                                           HorizontalAlignment="Center">
-                                    <TextBlock x:Name="VisitedEventsText"
-                                              Text="0"
-                                              FontSize="24"
-                                              FontWeight="Bold"
-                                              Foreground="{StaticResource AccentColor}"
-                                              HorizontalAlignment="Center"/>
-                                    <TextBlock Text="посещено"
-                                              FontSize="14"
-                                              HorizontalAlignment="Center"/>
-                                </StackPanel>
-                            </Grid>
                         </StackPanel>
                     </Border>
                 </StackPanel>

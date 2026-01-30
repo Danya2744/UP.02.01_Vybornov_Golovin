@@ -1,24 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace UP._02._01_Vybornov.Pages
 {
     public partial class ProfilePage : Page
     {
         private users _currentUser;
-        private bool _isEditing = false;
+        private bool _isPasswordChanging = false;
 
         public ProfilePage(users user)
         {
@@ -26,6 +18,18 @@ namespace UP._02._01_Vybornov.Pages
             _currentUser = user;
 
             Loaded += ProfilePage_Loaded;
+            InitializeValidation();
+        }
+
+        private void InitializeValidation()
+        {
+            // Подписываемся на события изменения полей
+            FullNameTextBox.TextChanged += ValidateField_TextChanged;
+            PhoneTextBox.TextChanged += ValidateField_TextChanged;
+            CurrentPasswordBox.PasswordChanged += PasswordField_PasswordChanged;
+            NewPasswordBox.PasswordChanged += PasswordField_PasswordChanged;
+            ConfirmPasswordBox.PasswordChanged += PasswordField_PasswordChanged;
+            BirthDatePicker.SelectedDateChanged += BirthDatePicker_SelectedDateChanged;
         }
 
         private void ProfilePage_Loaded(object sender, RoutedEventArgs e)
@@ -74,31 +78,7 @@ namespace UP._02._01_Vybornov.Pages
                     RoleTextBox.Text = role?.role_name ?? "Не указана";
 
                     // Фото пользователя
-                    if (!string.IsNullOrEmpty(user.photo_path))
-                    {
-                        try
-                        {
-                            if (System.IO.File.Exists(user.photo_path))
-                            {
-                                UserPhotoImage.Source = new BitmapImage(new Uri(user.photo_path, UriKind.Absolute));
-                            }
-                            else
-                            {
-                                UserPhotoImage.Source = new BitmapImage(new Uri("/Resources/default_user.png", UriKind.Relative));
-                            }
-                        }
-                        catch
-                        {
-                            UserPhotoImage.Source = new BitmapImage(new Uri("/Resources/default_user.png", UriKind.Relative));
-                        }
-                    }
-                    else
-                    {
-                        UserPhotoImage.Source = new BitmapImage(new Uri("/Resources/default_user.png", UriKind.Relative));
-                    }
-
-                    // Загружаем статистику
-                    LoadUserStatistics(context);
+                    LoadUserPhoto(user.photo_path);
                 }
             }
             catch (Exception ex)
@@ -108,14 +88,37 @@ namespace UP._02._01_Vybornov.Pages
             }
         }
 
-        private void LoadUserStatistics(ConferenceDBEntities context)
+        private void LoadUserPhoto(string photoPath)
         {
-            // Здесь будет загрузка статистики пользователя
-            // Например: количество зарегистрированных мероприятий и т.д.
-
-            EventsCountText.Text = "0";
-            ActiveEventsText.Text = "0";
-            VisitedEventsText.Text = "0";
+            try
+            {
+                if (!string.IsNullOrEmpty(photoPath))
+                {
+                    try
+                    {
+                        if (System.IO.File.Exists(photoPath))
+                        {
+                            UserPhotoImage.Source = new BitmapImage(new Uri(photoPath, UriKind.Absolute));
+                        }
+                        else
+                        {
+                            UserPhotoImage.Source = new BitmapImage(new Uri("/Resources/default_user.png", UriKind.Relative));
+                        }
+                    }
+                    catch
+                    {
+                        UserPhotoImage.Source = new BitmapImage(new Uri("/Resources/default_user.png", UriKind.Relative));
+                    }
+                }
+                else
+                {
+                    UserPhotoImage.Source = new BitmapImage(new Uri("/Resources/default_user.png", UriKind.Relative));
+                }
+            }
+            catch
+            {
+                UserPhotoImage.Source = new BitmapImage(new Uri("/Resources/default_user.png", UriKind.Relative));
+            }
         }
 
         private void BackButtonClick(object sender, RoutedEventArgs e)
@@ -135,11 +138,13 @@ namespace UP._02._01_Vybornov.Pages
         {
             // Сбрасываем изменения
             LoadUserProfile();
+            ClearPasswordFields();
+            HideAllErrorMessages();
         }
 
         private void SaveButtonClick(object sender, RoutedEventArgs e)
         {
-            if (!ValidateInput())
+            if (!ValidateAllFields())
                 return;
 
             try
@@ -151,35 +156,35 @@ namespace UP._02._01_Vybornov.Pages
                     if (user == null)
                         return;
 
+                    // Проверяем уникальность email (если изменился)
+                    string oldEmail = user.email;
+                    if (EmailTextBox.Text != oldEmail)
+                    {
+                        var emailExists = context.users.Any(u => u.email == EmailTextBox.Text && u.user_id != user.user_id);
+                        if (emailExists)
+                        {
+                            MessageBox.Show("Этот email уже используется другим пользователем", "Ошибка",
+                                MessageBoxButton.OK, MessageBoxImage.Error);
+                            return;
+                        }
+                    }
+
                     // Обновляем данные
                     user.full_name = FullNameTextBox.Text.Trim();
-                    user.email = EmailTextBox.Text.Trim();
                     user.phone = string.IsNullOrWhiteSpace(PhoneTextBox.Text) ? null : PhoneTextBox.Text.Trim();
                     user.birth_date = BirthDatePicker.SelectedDate;
 
                     // Смена пароля
-                    if (!string.IsNullOrEmpty(CurrentPasswordBox.Password) &&
-                        !string.IsNullOrEmpty(NewPasswordBox.Password))
+                    if (_isPasswordChanging)
                     {
-                        if (user.password_hash == CurrentPasswordBox.Password)
+                        if (user.password_hash != CurrentPasswordBox.Password)
                         {
-                            if (NewPasswordBox.Password == ConfirmPasswordBox.Password)
-                            {
-                                user.password_hash = NewPasswordBox.Password;
-                            }
-                            else
-                            {
-                                MessageBox.Show("Новые пароли не совпадают", "Ошибка",
-                                    MessageBoxButton.OK, MessageBoxImage.Error);
-                                return;
-                            }
-                        }
-                        else
-                        {
-                            MessageBox.Show("Текущий пароль указан неверно", "Ошибка",
-                                MessageBoxButton.OK, MessageBoxImage.Error);
+                            ShowError(CurrentPasswordErrorText, "Текущий пароль указан неверно");
+                            CurrentPasswordBox.Focus();
                             return;
                         }
+
+                        user.password_hash = NewPasswordBox.Password;
                     }
 
                     context.SaveChanges();
@@ -191,9 +196,8 @@ namespace UP._02._01_Vybornov.Pages
                         MessageBoxButton.OK, MessageBoxImage.Information);
 
                     // Очищаем поля паролей
-                    CurrentPasswordBox.Clear();
-                    NewPasswordBox.Clear();
-                    ConfirmPasswordBox.Clear();
+                    ClearPasswordFields();
+                    HideAllErrorMessages();
                 }
             }
             catch (Exception ex)
@@ -203,59 +207,162 @@ namespace UP._02._01_Vybornov.Pages
             }
         }
 
-        private bool ValidateInput()
+        #region Валидация полей
+
+        private bool ValidateAllFields()
         {
-            // Проверка ФИО
+            HideAllErrorMessages();
+
+            bool isValid = true;
+
+            // Валидация ФИО
             if (string.IsNullOrWhiteSpace(FullNameTextBox.Text))
             {
-                MessageBox.Show("Введите ФИО", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-                FullNameTextBox.Focus();
-                return false;
+                ShowError(FullNameErrorText, "Поле ФИО обязательно для заполнения");
+                isValid = false;
             }
-
-            // Проверка email
-            if (string.IsNullOrWhiteSpace(EmailTextBox.Text) ||
-                !EmailTextBox.Text.Contains("@"))
+            else if (FullNameTextBox.Text.Length < 2)
             {
-                MessageBox.Show("Введите корректный email", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-                EmailTextBox.Focus();
-                return false;
+                ShowError(FullNameErrorText, "ФИО должно содержать минимум 2 символа");
+                isValid = false;
+            }
+            else if (FullNameTextBox.Text.Length > 150)
+            {
+                ShowError(FullNameErrorText, "ФИО не должно превышать 150 символов");
+                isValid = false;
             }
 
-            // Проверка паролей
-            if (!string.IsNullOrEmpty(CurrentPasswordBox.Password) ||
-                !string.IsNullOrEmpty(NewPasswordBox.Password) ||
-                !string.IsNullOrEmpty(ConfirmPasswordBox.Password))
+            // Валидация телефона
+            if (!string.IsNullOrWhiteSpace(PhoneTextBox.Text))
+            {
+                string phone = PhoneTextBox.Text.Trim();
+                if (!IsValidPhoneNumber(phone))
+                {
+                    ShowError(PhoneErrorText, "Введите корректный номер телефона");
+                    isValid = false;
+                }
+            }
+
+            // Валидация даты рождения
+            if (BirthDatePicker.SelectedDate.HasValue)
+            {
+                if (BirthDatePicker.SelectedDate.Value > DateTime.Now)
+                {
+                    ShowError(BirthDateErrorText, "Дата рождения не может быть в будущем");
+                    isValid = false;
+                }
+                else if (BirthDatePicker.SelectedDate.Value < new DateTime(1900, 1, 1))
+                {
+                    ShowError(BirthDateErrorText, "Дата рождения не может быть ранее 1900 года");
+                    isValid = false;
+                }
+                else if ((DateTime.Now - BirthDatePicker.SelectedDate.Value).TotalDays / 365 < 14)
+                {
+                    ShowError(BirthDateErrorText, "Пользователь должен быть старше 14 лет");
+                    isValid = false;
+                }
+            }
+
+            // Валидация паролей
+            bool anyPasswordFilled = !string.IsNullOrEmpty(CurrentPasswordBox.Password) ||
+                                     !string.IsNullOrEmpty(NewPasswordBox.Password) ||
+                                     !string.IsNullOrEmpty(ConfirmPasswordBox.Password);
+
+            bool allPasswordsFilled = !string.IsNullOrEmpty(CurrentPasswordBox.Password) &&
+                                      !string.IsNullOrEmpty(NewPasswordBox.Password) &&
+                                      !string.IsNullOrEmpty(ConfirmPasswordBox.Password);
+
+            if (anyPasswordFilled && !allPasswordsFilled)
             {
                 if (string.IsNullOrEmpty(CurrentPasswordBox.Password))
-                {
-                    MessageBox.Show("Введите текущий пароль", "Ошибка",
-                        MessageBoxButton.OK, MessageBoxImage.Error);
-                    CurrentPasswordBox.Focus();
-                    return false;
-                }
+                    ShowError(CurrentPasswordErrorText, "Введите текущий пароль");
 
                 if (string.IsNullOrEmpty(NewPasswordBox.Password))
+                    ShowError(NewPasswordErrorText, "Введите новый пароль");
+
+                if (string.IsNullOrEmpty(ConfirmPasswordBox.Password))
+                    ShowError(ConfirmPasswordErrorText, "Повторите новый пароль");
+
+                isValid = false;
+            }
+
+            if (allPasswordsFilled)
+            {
+                _isPasswordChanging = true;
+
+                if (NewPasswordBox.Password.Length < 6)
                 {
-                    MessageBox.Show("Введите новый пароль", "Ошибка",
-                        MessageBoxButton.OK, MessageBoxImage.Error);
-                    NewPasswordBox.Focus();
-                    return false;
+                    ShowError(NewPasswordErrorText, "Пароль должен содержать минимум 6 символов");
+                    isValid = false;
                 }
 
                 if (NewPasswordBox.Password != ConfirmPasswordBox.Password)
                 {
-                    MessageBox.Show("Новые пароли не совпадают", "Ошибка",
-                        MessageBoxButton.OK, MessageBoxImage.Error);
-                    ConfirmPasswordBox.Focus();
-                    return false;
+                    ShowError(ConfirmPasswordErrorText, "Пароли не совпадают");
+                    isValid = false;
                 }
             }
+            else
+            {
+                _isPasswordChanging = false;
+            }
 
-            return true;
+            return isValid;
         }
+
+        private bool IsValidPhoneNumber(string phone)
+        {
+            // Простая валидация телефона
+            if (string.IsNullOrWhiteSpace(phone))
+                return true;
+
+            // Удаляем все нецифровые символы
+            string digitsOnly = Regex.Replace(phone, @"[^\d]", "");
+
+            // Проверяем длину номера (с кодом страны минимум 10 цифр)
+            return digitsOnly.Length >= 10 && digitsOnly.Length <= 15;
+        }
+
+        private void ValidateField_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            HideAllErrorMessages();
+        }
+
+        private void PasswordField_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            HideAllErrorMessages();
+        }
+
+        private void BirthDatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            HideAllErrorMessages();
+        }
+
+        private void ShowError(TextBlock errorTextBlock, string message)
+        {
+            errorTextBlock.Text = message;
+            errorTextBlock.Visibility = Visibility.Visible;
+        }
+
+        private void HideAllErrorMessages()
+        {
+            FullNameErrorText.Visibility = Visibility.Collapsed;
+            PhoneErrorText.Visibility = Visibility.Collapsed;
+            BirthDateErrorText.Visibility = Visibility.Collapsed;
+            CurrentPasswordErrorText.Visibility = Visibility.Collapsed;
+            NewPasswordErrorText.Visibility = Visibility.Collapsed;
+            ConfirmPasswordErrorText.Visibility = Visibility.Collapsed;
+        }
+
+        private void ClearPasswordFields()
+        {
+            CurrentPasswordBox.Clear();
+            NewPasswordBox.Clear();
+            ConfirmPasswordBox.Clear();
+            _isPasswordChanging = false;
+        }
+
+        #endregion
 
         private string GetUserRole()
         {

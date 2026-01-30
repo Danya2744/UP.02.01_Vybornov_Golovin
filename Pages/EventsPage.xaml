@@ -16,6 +16,10 @@
         <SolidColorBrush x:Key="BorderColor" Color="#DDDDDD"/>
         <SolidColorBrush x:Key="UpcomingEventColor" Color="#4CAF50"/>
         <SolidColorBrush x:Key="PastEventColor" Color="#9E9E9E"/>
+        <SolidColorBrush x:Key="RegisteredColor" Color="#4CAF50"/>
+
+        <!-- Конвертер для отображения бейджа регистрации -->
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
 
         <Style x:Key="EventCardStyle" TargetType="Border">
             <Setter Property="Background" Value="{StaticResource PrimaryBackground}"/>
@@ -61,15 +65,42 @@
                     MouseLeftButtonDown="EventCard_MouseLeftButtonDown"
                     Tag="{Binding event_id}">
                 <StackPanel>
-                    <!-- Заголовок -->
-                    <TextBlock Text="{Binding event_name}" 
-                              FontSize="16"
-                              FontWeight="Bold"
-                              Foreground="{StaticResource AccentColor}"
-                              TextAlignment="Center"
-                              HorizontalAlignment="Center"
-                              Margin="0,0,0,20"
-                              TextWrapping="Wrap"/>
+                    <!-- Заголовок и статус регистрации -->
+                    <Grid Margin="0,0,0,15">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Название мероприятия -->
+                        <TextBlock Grid.Column="0"
+                                  Text="{Binding event_name}" 
+                                  FontSize="16"
+                                  FontWeight="Bold"
+                                  Foreground="{StaticResource AccentColor}"
+                                  TextWrapping="Wrap"
+                                  VerticalAlignment="Center"/>
+
+                        <!-- Бейдж регистрации -->
+                        <Border Grid.Column="1"
+                                Background="{StaticResource RegisteredColor}"
+                                CornerRadius="12"
+                                Padding="8,3"
+                                Margin="10,0,0,0"
+                                Visibility="{Binding is_registered, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="✓"
+                                          FontSize="10"
+                                          FontWeight="Bold"
+                                          Foreground="White"
+                                          Margin="0,0,3,0"/>
+                                <TextBlock Text="Вы зарегистрированы"
+                                          FontSize="10"
+                                          FontWeight="Bold"
+                                          Foreground="White"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
 
                     <!-- Содержимое -->
                     <Grid>

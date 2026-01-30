@@ -15,6 +15,7 @@ namespace UP._02._01_Vybornov.Pages
         private users _currentUser;
         private string _currentRole;
         private bool _showMyEventsOnly = false;
+        private List<int> _myRegisteredEventIds = new List<int>();
 
         public EventsPage(users user, string role)
         {
@@ -30,6 +31,7 @@ namespace UP._02._01_Vybornov.Pages
         {
             LoadEvents();
             LoadDirections();
+            LoadMyRegistrations();
         }
 
         private void UpdateNavigationButtons()
@@ -51,6 +53,29 @@ namespace UP._02._01_Vybornov.Pages
                 // Гость - скрываем все кнопки
                 MyEventsButton.Visibility = Visibility.Collapsed;
                 ProfileButton.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void LoadMyRegistrations()
+        {
+            if (_currentUser != null && _currentRole.ToLower() == "участник")
+            {
+                try
+                {
+                    using (var context = new ConferenceDBEntities())
+                    {
+                        // Загружаем ID мероприятий, на которые зарегистрирован пользователь
+                        _myRegisteredEventIds = context.event_registrations
+                            .Where(r => r.user_id == _currentUser.user_id)
+                            .Select(r => r.event_id)
+                            .ToList();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка загрузки регистраций:\n{ex.Message}",
+                        "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 
@@ -126,6 +151,11 @@ namespace UP._02._01_Vybornov.Pages
                             viewModel.city_name = "Не указан";
                         }
 
+                        // Проверяем, зарегистрирован ли пользователь на это мероприятие
+                        viewModel.is_registered = _currentUser != null &&
+                                                 _currentRole.ToLower() == "участник" &&
+                                                 _myRegisteredEventIds.Contains(ev.event_id);
+
                         // Исправляем путь к логотипу, если он относительный
                         if (!string.IsNullOrEmpty(ev.logo_path))
                         {
@@ -144,8 +174,7 @@ namespace UP._02._01_Vybornov.Pages
                     }
 
                     // Показываем все мероприятия (без фильтров)
-                    ItemsControlEvents.ItemsSource = _allEvents;
-                    UpdateEventsCount();
+                    ApplyFilters();
                 }
             }
             catch (Exception ex)
@@ -199,6 +228,12 @@ namespace UP._02._01_Vybornov.Pages
         {
             var filteredEvents = _allEvents.AsEnumerable();
 
+            // Применяем фильтр "Мои мероприятия"
+            if (_showMyEventsOnly)
+            {
+                filteredEvents = filteredEvents.Where(e => e.is_registered);
+            }
+
             // Применяем фильтр по направлению
             var selectedDirection = DirectionFilterComboBox.SelectedItem as ComboBoxItem;
             if (selectedDirection?.Tag?.ToString() != "all")
@@ -243,10 +278,11 @@ namespace UP._02._01_Vybornov.Pages
         {
             int totalCount = _allEvents.Count;
             int filteredCount = ItemsControlEvents.Items.Count;
+            int myRegisteredCount = _myRegisteredEventIds.Count;
 
             if (_showMyEventsOnly)
             {
-                EventsCountTextBlock.Text = $"Мои мероприятия: {filteredCount}";
+                EventsCountTextBlock.Text = $"Мои мероприятия: {filteredCount} из {myRegisteredCount}";
             }
             else if (totalCount == filteredCount)
             {
@@ -304,6 +340,13 @@ namespace UP._02._01_Vybornov.Pages
             StartDatePicker.Text = "";
             EndDatePicker.Text = "";
 
+            // Сбрасываем фильтр "Мои мероприятия"
+            if (_showMyEventsOnly)
+            {
+                _showMyEventsOnly = false;
+                UpdateMyEventsButtonAppearance();
+            }
+
             // Показываем все мероприятия
             ItemsControlEvents.ItemsSource = _allEvents;
             UpdateEventsCount();
@@ -321,64 +364,41 @@ namespace UP._02._01_Vybornov.Pages
             }
         }
 
-        private void RegisterButtonClick(object sender, RoutedEventArgs e)
-        {
-            if (sender is Button button && button.Tag != null && int.TryParse(button.Tag.ToString(), out int eventId))
-            {
-                RegisterForEvent(eventId);
-            }
-        }
-
         private void NavigateToEventDetails(int eventId)
         {
             var eventDetailsPage = new EventDetailsPage(eventId, _currentUser, _currentRole);
             NavigationService.Navigate(eventDetailsPage);
         }
 
-        private void RegisterForEvent(int eventId)
-        {
-            if (_currentUser == null || _currentRole.ToLower() != "участник")
-            {
-                MessageBox.Show("Для регистрации на мероприятия необходимо войти как участник",
-                    "Требуется авторизация", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            try
-            {
-                using (var context = new ConferenceDBEntities())
-                {
-                    // Проверяем, не зарегистрирован ли уже пользователь
-                    // Здесь будет логика регистрации
-
-                    MessageBox.Show("Регистрация на мероприятие прошла успешно!",
-                        "Успешно", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка при регистрации: {ex.Message}",
-                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
         // Навигационные кнопки
         private void MyEventsButtonClick(object sender, RoutedEventArgs e)
         {
-            _showMyEventsOnly = !_showMyEventsOnly;
+            if (_currentUser == null || _currentRole.ToLower() != "участник")
+            {
+                MessageBox.Show("Эта функция доступна только для участников",
+                    "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
 
+            _showMyEventsOnly = !_showMyEventsOnly;
+            UpdateMyEventsButtonAppearance();
+            ApplyFilters();
+        }
+
+        private void UpdateMyEventsButtonAppearance()
+        {
             if (_showMyEventsOnly)
             {
                 MyEventsButton.Background = (SolidColorBrush)FindResource("AccentColor");
                 MyEventsButton.Foreground = Brushes.White;
+                MyEventsButton.Content = "Все мероприятия";
             }
             else
             {
                 MyEventsButton.Background = (SolidColorBrush)FindResource("SecondaryBackground");
                 MyEventsButton.Foreground = (SolidColorBrush)FindResource("TextColor");
+                MyEventsButton.Content = "Мои мероприятия";
             }
-
-            ApplyFilters();
         }
 
         private void ProfileButtonClick(object sender, RoutedEventArgs e)
@@ -405,6 +425,7 @@ namespace UP._02._01_Vybornov.Pages
             public string date_range { get; set; }
             public bool is_upcoming { get; set; }
             public int duration_days { get; set; }
+            public bool is_registered { get; set; }
         }
     }
 }
