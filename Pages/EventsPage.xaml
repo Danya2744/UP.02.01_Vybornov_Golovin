@@ -18,7 +18,6 @@
         <SolidColorBrush x:Key="PastEventColor" Color="#9E9E9E"/>
         <SolidColorBrush x:Key="RegisteredColor" Color="#4CAF50"/>
 
-        <!-- Конвертер для отображения бейджа регистрации -->
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
 
         <Style x:Key="EventCardStyle" TargetType="Border">
@@ -59,23 +58,19 @@
             <Setter Property="Padding" Value="5"/>
         </Style>
 
-        <!-- Конвертер для проверки пустой строки -->
         <BooleanToVisibilityConverter x:Key="StringToVisibilityConverter"/>
 
-        <!-- Шаблон для карточки мероприятия -->
         <DataTemplate x:Key="EventCardTemplate">
             <Border Style="{StaticResource EventCardStyle}" 
                     MouseLeftButtonDown="EventCard_MouseLeftButtonDown"
                     Tag="{Binding event_id}">
                 <StackPanel>
-                    <!-- Заголовок и статус регистрации -->
                     <Grid Margin="0,0,0,15">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <!-- Название мероприятия -->
                         <TextBlock Grid.Column="0"
                                   Text="{Binding event_name}" 
                                   FontSize="16"
@@ -84,9 +79,7 @@
                                   TextWrapping="Wrap"
                                   VerticalAlignment="Center"/>
 
-                        <!-- Бейдж регистрации и информация о роли -->
                         <StackPanel Grid.Column="1" Orientation="Vertical" Margin="10,0,0,0">
-                            <!-- Бейдж регистрации -->
                             <Border Background="{StaticResource RegisteredColor}"
                                     CornerRadius="12"
                                     Padding="8,3"
@@ -105,7 +98,6 @@
                                 </StackPanel>
                             </Border>
 
-                            <!-- Информация о роли (для модераторов и жюри) -->
                             <Border Background="{StaticResource AccentColor}"
                                     CornerRadius="8"
                                     Padding="6,3"
@@ -120,19 +112,16 @@
                         </StackPanel>
                     </Grid>
 
-                    <!-- Содержимое -->
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
-                        <!-- Левая часть с лого и данными -->
                         <StackPanel Grid.Column="0" 
                                    Width="130"
                                    Margin="0,0,20,0">
 
-                            <!-- Логотип -->
                             <Border Width="100" 
                                     Height="100"
                                     Background="White"
@@ -144,7 +133,6 @@
                                        Stretch="Uniform"/>
                             </Border>
 
-                            <!-- Данные -->
                             <StackPanel>
                                 <TextBlock Text="Дата:" 
                                           FontSize="11"
@@ -175,7 +163,6 @@
                             </StackPanel>
                         </StackPanel>
 
-                        <!-- Правая часть: описание -->
                         <Border Grid.Column="1"
                                 Background="{StaticResource PrimaryBackground}"
                                 CornerRadius="4"
@@ -221,7 +208,6 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Шапка с заголовком и навигацией -->
         <Border Grid.Row="0" 
                 Background="{StaticResource PrimaryBackground}" 
                 Padding="15"
@@ -240,7 +226,6 @@
                               VerticalAlignment="Center"/>
                 </StackPanel>
 
-                <!-- Навигационные кнопки -->
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
                     <Button x:Name="MyEventsButton"
                             Content="Мои мероприятия"
@@ -257,7 +242,6 @@
             </DockPanel>
         </Border>
 
-        <!-- Панель фильтров -->
         <Border Grid.Row="1" 
                 Background="{StaticResource PrimaryBackground}" 
                 Padding="15"
@@ -272,7 +256,6 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Фильтр по направлению -->
                 <StackPanel Grid.Column="0" 
                            Orientation="Vertical"
                            Margin="0,0,10,0">
@@ -291,7 +274,6 @@
                     </ComboBox>
                 </StackPanel>
 
-                <!-- Фильтр по дате начала -->
                 <StackPanel Grid.Column="1" 
                            Orientation="Vertical"
                            Margin="10,0,10,0">
@@ -310,7 +292,6 @@
                     </DatePicker>
                 </StackPanel>
 
-                <!-- Фильтр по дате окончания -->
                 <StackPanel Grid.Column="2" 
                            Orientation="Vertical"
                            Margin="10,0,10,0">
@@ -329,7 +310,6 @@
                     </DatePicker>
                 </StackPanel>
 
-                <!-- Кнопки управления фильтрами -->
                 <StackPanel Grid.Column="3" 
                            Orientation="Vertical"
                            Margin="10,0,0,0">
@@ -365,7 +345,6 @@
             </Grid>
         </Border>
 
-        <!-- Список мероприятий -->
         <ScrollViewer Grid.Row="2" 
                      VerticalScrollBarVisibility="Auto"
                      Padding="20">

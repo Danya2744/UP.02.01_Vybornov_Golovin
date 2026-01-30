@@ -75,7 +75,6 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Заголовок -->
         <Border Grid.Row="0" 
                 Background="{StaticResource PrimaryBackground}" 
                 Padding="15"
@@ -88,12 +87,10 @@
                       HorizontalAlignment="Center"/>
         </Border>
 
-        <!-- Форма -->
         <ScrollViewer Grid.Row="1" 
                      VerticalScrollBarVisibility="Auto"
                      Padding="20">
             <StackPanel>
-                <!-- ID (только для редактирования) -->
                 <TextBlock x:Name="EventIdLabel" 
                           Text="ID мероприятия:" 
                           Style="{StaticResource FormLabelStyle}"
@@ -103,7 +100,6 @@
                         IsReadOnly="True"
                         Visibility="Collapsed"/>
 
-                <!-- Название -->
                 <TextBlock Text="Название мероприятия:*" 
                           Style="{StaticResource FormLabelStyle}"/>
                 <TextBox x:Name="NameTextBox"
@@ -113,7 +109,6 @@
                           Style="{StaticResource ErrorTextStyle}"
                           Text="Название обязательно для заполнения"/>
 
-                <!-- Логотип -->
                 <TextBlock Text="Логотип (путь к файлу):" 
                           Style="{StaticResource FormLabelStyle}"/>
                 <Grid>
@@ -140,7 +135,6 @@
                           Foreground="{StaticResource SecondaryTextColor}"
                           Margin="0,-5,0,10"/>
 
-                <!-- Направление -->
                 <TextBlock Text="Направление:*" 
                           Style="{StaticResource FormLabelStyle}"/>
                 <ComboBox x:Name="DirectionComboBox"
@@ -150,7 +144,6 @@
                           Style="{StaticResource ErrorTextStyle}"
                           Text="Выберите направление"/>
 
-                <!-- Город -->
                 <TextBlock Text="Город проведения:*" 
                           Style="{StaticResource FormLabelStyle}"/>
                 <ComboBox x:Name="CityComboBox"
@@ -160,7 +153,6 @@
                           Style="{StaticResource ErrorTextStyle}"
                           Text="Выберите город"/>
 
-                <!-- Даты -->
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -185,7 +177,6 @@
                           Style="{StaticResource ErrorTextStyle}"
                           Text="Дата окончания не может быть раньше даты начала"/>
 
-                <!-- Описание -->
                 <TextBlock Text="Описание:" 
                           Style="{StaticResource FormLabelStyle}"/>
                 <TextBox x:Name="DescriptionTextBox"
@@ -196,7 +187,6 @@
                         TextWrapping="Wrap"
                         AcceptsReturn="True"/>
 
-                <!-- Предупреждение о создании активностей -->
                 <Border Background="#FFF3CD"
                         BorderBrush="#856404"
                         BorderThickness="1"
@@ -217,7 +207,6 @@
             </StackPanel>
         </ScrollViewer>
 
-        <!-- Кнопки -->
         <Border Grid.Row="2" 
                 Background="{StaticResource PrimaryBackground}" 
                 Padding="15"

@@ -32,7 +32,6 @@ namespace UP._02._01_Vybornov.Pages
             {
                 using (var context = new ConferenceDBEntities())
                 {
-                    // Загружаем мероприятия, где текущий пользователь является организатором
                     var events = context.events
                         .Where(e => e.organizer_id == _currentUser.user_id)
                         .ToList();
@@ -41,7 +40,6 @@ namespace UP._02._01_Vybornov.Pages
                     var cities = context.cities.ToList();
                     var cityEvents = context.city_event.ToList();
 
-                    // Загружаем активности для подсчета
                     var allActivities = context.activities.ToList();
 
                     _allEvents.Clear();
@@ -61,17 +59,14 @@ namespace UP._02._01_Vybornov.Pages
                             OrganizerId = ev.organizer_id
                         };
 
-                        // Находим направление
                         var direction = directions.FirstOrDefault(d => d.direction_id == ev.direction_id);
                         viewModel.DirectionName = direction?.direction_name ?? "Не указано";
 
-                        // Находим город
                         var cityEvent = cityEvents.FirstOrDefault(ce => ce.event_id == ev.event_id);
                         var city = cityEvent != null ?
                             cities.FirstOrDefault(c => c.city_id == cityEvent.city_id) : null;
                         viewModel.CityName = city?.city_name ?? "Не указан";
 
-                        // Форматируем даты
                         if (ev.start_date == ev.end_date)
                         {
                             viewModel.DateRange = ev.start_date.ToString("dd.MM.yyyy");
@@ -81,7 +76,6 @@ namespace UP._02._01_Vybornov.Pages
                             viewModel.DateRange = $"{ev.start_date:dd.MM.yyyy} - {ev.end_date:dd.MM.yyyy}";
                         }
 
-                        // Определяем статус мероприятия
                         if (ev.end_date < DateTime.Today)
                         {
                             viewModel.StatusText = "Завершено";
@@ -98,11 +92,9 @@ namespace UP._02._01_Vybornov.Pages
                             viewModel.StatusColor = Brushes.Orange;
                         }
 
-                        // Подсчитываем активности
                         viewModel.ActivitiesCount = allActivities
                             .Count(a => a.event_id == ev.event_id);
 
-                        // Исправляем путь к логотипу
                         if (!string.IsNullOrEmpty(ev.logo_path))
                         {
                             if (!ev.logo_path.StartsWith("http") && !ev.logo_path.StartsWith("/"))
@@ -122,7 +114,6 @@ namespace UP._02._01_Vybornov.Pages
                         _allEvents.Add(viewModel);
                     }
 
-                    // Применяем фильтры
                     ApplyFilters();
                 }
             }
@@ -145,7 +136,6 @@ namespace UP._02._01_Vybornov.Pages
 
                     DirectionFilterComboBox.Items.Clear();
 
-                    // Добавляем элемент "Все направления"
                     var allItem = new ComboBoxItem();
                     allItem.Content = "Все направления";
                     allItem.Tag = "all";
@@ -159,7 +149,6 @@ namespace UP._02._01_Vybornov.Pages
                         DirectionFilterComboBox.Items.Add(item);
                     }
 
-                    // Выбираем первый элемент
                     if (DirectionFilterComboBox.Items.Count > 0)
                     {
                         DirectionFilterComboBox.SelectedIndex = 0;
@@ -177,7 +166,6 @@ namespace UP._02._01_Vybornov.Pages
         {
             var filteredEvents = _allEvents.AsEnumerable();
 
-            // Применяем поиск
             if (!string.IsNullOrEmpty(SearchTextBox.Text))
             {
                 string searchText = SearchTextBox.Text.ToLower();
@@ -187,7 +175,6 @@ namespace UP._02._01_Vybornov.Pages
                     (e.CityName?.ToLower() ?? "").Contains(searchText));
             }
 
-            // Применяем фильтр по направлению
             var selectedDirection = DirectionFilterComboBox.SelectedItem as ComboBoxItem;
             if (selectedDirection?.Tag?.ToString() != "all")
             {
@@ -197,21 +184,18 @@ namespace UP._02._01_Vybornov.Pages
                 }
             }
 
-            // Применяем фильтр по дате начала
             if (StartDatePicker.SelectedDate.HasValue)
             {
                 DateTime startDate = StartDatePicker.SelectedDate.Value;
                 filteredEvents = filteredEvents.Where(e => e.StartDate >= startDate);
             }
 
-            // Применяем фильтр по дате окончания
             if (EndDatePicker.SelectedDate.HasValue)
             {
                 DateTime endDate = EndDatePicker.SelectedDate.Value;
                 filteredEvents = filteredEvents.Where(e => e.EndDate <= endDate);
             }
 
-            // Обновляем список
             EventsItemsControl.ItemsSource = filteredEvents.ToList();
         }
 
@@ -223,11 +207,9 @@ namespace UP._02._01_Vybornov.Pages
 
         private void AddEventButton_Click(object sender, RoutedEventArgs e)
         {
-            // Открываем форму добавления мероприятия
             var addEventWindow = new AddEditEventWindow(_currentUser);
             addEventWindow.ShowDialog();
 
-            // Обновляем список после закрытия окна
             if (addEventWindow.IsSaved)
             {
                 LoadEvents();
@@ -238,11 +220,9 @@ namespace UP._02._01_Vybornov.Pages
         {
             if (sender is Button button && button.Tag is int eventId)
             {
-                // Открываем форму редактирования мероприятия
                 var editEventWindow = new AddEditEventWindow(_currentUser, eventId);
                 editEventWindow.ShowDialog();
 
-                // Обновляем список после закрытия окна
                 if (editEventWindow.IsSaved)
                 {
                     LoadEvents();
@@ -254,7 +234,6 @@ namespace UP._02._01_Vybornov.Pages
         {
             if (sender is Button button && button.Tag is int eventId)
             {
-                // Переход на страницу управления активностями для конкретного мероприятия
                 var activitiesPage = new OrganizerActivitiesPage(_currentUser, eventId);
                 NavigationService.Navigate(activitiesPage);
             }
@@ -277,7 +256,6 @@ namespace UP._02._01_Vybornov.Pages
                     {
                         using (var context = new ConferenceDBEntities())
                         {
-                            // Проверяем, есть ли активности у мероприятия
                             var hasActivities = context.activities
                                 .Any(a => a.event_id == eventId);
 
@@ -291,7 +269,6 @@ namespace UP._02._01_Vybornov.Pages
                                 return;
                             }
 
-                            // Удаляем мероприятие
                             var ev = context.events.Find(eventId);
                             if (ev != null)
                             {
@@ -303,7 +280,6 @@ namespace UP._02._01_Vybornov.Pages
                                     MessageBoxButton.OK,
                                     MessageBoxImage.Information);
 
-                                // Обновляем список
                                 LoadEvents();
                             }
                         }
@@ -343,7 +319,6 @@ namespace UP._02._01_Vybornov.Pages
                 MessageBoxImage.Information);
         }
 
-        // Класс для отображения мероприятий
         public class EventViewModel
         {
             public int EventId { get; set; }

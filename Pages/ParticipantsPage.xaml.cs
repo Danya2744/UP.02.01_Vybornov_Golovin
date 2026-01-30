@@ -62,7 +62,6 @@ namespace UP._02._01_Vybornov.Pages
             {
                 using (var context = new ConferenceDBEntities())
                 {
-                    // Получаем всех участников мероприятия
                     var participants = context.event_registrations
                         .Where(r => r.event_id == _eventId && r.status.ToLower() == "registered")
                         .Join(context.users,
@@ -103,7 +102,6 @@ namespace UP._02._01_Vybornov.Pages
             NavigationService.GoBack();
         }
 
-        // ViewModel для участника
         public class ParticipantViewModel
         {
             public int UserId { get; set; }

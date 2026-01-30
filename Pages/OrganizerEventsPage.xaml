@@ -77,7 +77,6 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Шапка -->
         <Border Grid.Row="0" 
                 Background="{StaticResource PrimaryBackground}" 
                 Padding="15"
@@ -99,7 +98,6 @@
             </DockPanel>
         </Border>
 
-        <!-- Панель управления -->
         <Border Grid.Row="1" 
                 Background="{StaticResource PrimaryBackground}" 
                 Padding="15"
@@ -111,9 +109,7 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Фильтры и поиск -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal">
-                    <!-- Поиск -->
                     <StackPanel Orientation="Vertical" Margin="0,0,20,0">
                         <TextBlock Text="Поиск:" 
                                   FontSize="14"
@@ -131,7 +127,6 @@
                         </TextBox>
                     </StackPanel>
 
-                    <!-- Фильтр по направлению -->
                     <StackPanel Orientation="Vertical" Margin="0,0,20,0">
                         <TextBlock Text="Направление:" 
                                   FontSize="14"
@@ -143,7 +138,6 @@
                                  SelectionChanged="DirectionFilterComboBox_SelectionChanged"/>
                     </StackPanel>
 
-                    <!-- Фильтр по дате -->
                     <StackPanel Orientation="Vertical">
                         <TextBlock Text="Дата проведения:" 
                                   FontSize="14"
@@ -164,7 +158,6 @@
                     </StackPanel>
                 </StackPanel>
 
-                <!-- Кнопки управления -->
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
                     <Button x:Name="AddEventButton"
                             Content="+ Добавить мероприятие"
@@ -180,7 +173,6 @@
             </Grid>
         </Border>
 
-        <!-- Список мероприятий -->
         <ScrollViewer Grid.Row="2" 
                      VerticalScrollBarVisibility="Auto"
                      Padding="20">
@@ -195,9 +187,7 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
 
-                                <!-- Логотип и дата -->
                                 <StackPanel Grid.Column="0" Margin="0,0,20,0">
-                                    <!-- Логотип -->
                                     <Border Width="120" 
                                             Height="120"
                                             Background="{StaticResource SecondaryBackground}"
@@ -209,14 +199,12 @@
                                                Stretch="Uniform"/>
                                     </Border>
 
-                                    <!-- Даты -->
                                     <TextBlock Text="{Binding DateRange}"
                                               FontSize="12"
                                               FontWeight="Bold"
                                               HorizontalAlignment="Center"/>
                                 </StackPanel>
 
-                                <!-- Информация о мероприятии -->
                                 <StackPanel Grid.Column="1">
                                     <TextBlock Text="{Binding EventName}" 
                                               FontSize="16"
@@ -270,7 +258,6 @@
                                     </StackPanel>
                                 </StackPanel>
 
-                                <!-- Кнопки действий -->
                                 <StackPanel Grid.Column="2" 
                                            VerticalAlignment="Center"
                                            Margin="20,0,0,0">

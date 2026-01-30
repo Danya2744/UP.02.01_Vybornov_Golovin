@@ -28,7 +28,6 @@ namespace UP._02._01_Vybornov.Pages
 
         private void UpdateUIForUser()
         {
-            // Скрываем все панели сначала
             GuestActionsPanel.Visibility = Visibility.Collapsed;
             ParticipantActionsPanel.Visibility = Visibility.Collapsed;
             ModeratorActionsPanel.Visibility = Visibility.Collapsed;
@@ -37,7 +36,6 @@ namespace UP._02._01_Vybornov.Pages
 
             if (_currentUser != null)
             {
-                // Пользователь авторизован
                 GuestActionsPanel.Visibility = Visibility.Collapsed;
 
                 switch (_currentRole)
@@ -61,7 +59,6 @@ namespace UP._02._01_Vybornov.Pages
             }
             else
             {
-                // Гость
                 GuestActionsPanel.Visibility = Visibility.Visible;
             }
         }
@@ -81,14 +78,12 @@ namespace UP._02._01_Vybornov.Pages
                 {
                     using (var context = new ConferenceDBEntities())
                     {
-                        // Загружаем активности для текущего мероприятия
                         _activities = context.activities
                             .Where(a => a.event_id == _eventId)
                             .OrderBy(a => a.activity_day)
                             .ThenBy(a => a.start_time)
                             .ToList();
 
-                        // Для модератора: проверяем, на какие активности он уже зарегистрирован
                         if (_currentRole == "модератор")
                         {
                             var moderatorActivities = context.moderator_activities
@@ -101,7 +96,6 @@ namespace UP._02._01_Vybornov.Pages
                                 .ToList();
                         }
 
-                        // Для жюри: проверяем, на какие активности он уже зарегистрирован
                         if (_currentRole == "жюри")
                         {
                             var juryActivities = context.jury_activities
@@ -113,7 +107,6 @@ namespace UP._02._01_Vybornov.Pages
                                 .Where(a => !juryActivities.Contains(a.activity_id))
                                 .ToList();
 
-                            // Загружаем уже выбранные активности для отображения
                             LoadSelectedJuryActivities();
                         }
                     }
@@ -157,7 +150,6 @@ namespace UP._02._01_Vybornov.Pages
             {
                 using (var context = new ConferenceDBEntities())
                 {
-                    // Находим мероприятие
                     var ev = context.events.FirstOrDefault(e => e.event_id == _eventId);
                     if (ev == null)
                     {
@@ -167,21 +159,16 @@ namespace UP._02._01_Vybornov.Pages
                         return;
                     }
 
-                    // Загружаем связанные данные
                     var direction = context.directions.FirstOrDefault(d => d.direction_id == ev.direction_id);
                     var organizer = ev.organizer_id.HasValue ?
                         context.users.FirstOrDefault(u => u.user_id == ev.organizer_id.Value) : null;
 
-                    // Находим город проведения
                     var cityEvent = context.city_event.FirstOrDefault(ce => ce.event_id == ev.event_id);
                     var city = cityEvent != null ?
                         context.cities.FirstOrDefault(c => c.city_id == cityEvent.city_id) : null;
 
-                    // Обновляем UI
                     EventTitleTextBlock.Text = ev.event_name;
-                    // PageTitleTextBlock.Text остается "Детали мероприятия" как установлено в XAML
 
-                    // Дата
                     if (ev.start_date == ev.end_date)
                     {
                         DateTextBlock.Text = ev.start_date.ToString("dd.MM.yyyy");
@@ -191,23 +178,15 @@ namespace UP._02._01_Vybornov.Pages
                         DateTextBlock.Text = $"{ev.start_date:dd.MM.yyyy} - {ev.end_date:dd.MM.yyyy}";
                     }
 
-                    // Город
                     CityTextBlock.Text = city?.city_name ?? "Не указан";
-
-                    // Организатор
                     OrganizerTextBlock.Text = organizer?.full_name ?? "Не указан";
-
-                    // Направление
                     DirectionTextBlock.Text = direction?.direction_name ?? "Не указано";
 
-                    // Длительность
                     int durationDays = (ev.end_date - ev.start_date).Days + 1;
                     DurationTextBlock.Text = $"{durationDays} дн.";
 
-                    // Описание
                     DescriptionTextBlock.Text = ev.description ?? "Описание отсутствует";
 
-                    // Логотип
                     if (!string.IsNullOrEmpty(ev.logo_path))
                     {
                         try
@@ -224,7 +203,6 @@ namespace UP._02._01_Vybornov.Pages
                         EventLogoImage.Source = new BitmapImage(new Uri("/Resources/default_event.png", UriKind.Relative));
                     }
 
-                    // Загружаем активности
                     LoadActivities(context);
                 }
             }
@@ -243,18 +221,15 @@ namespace UP._02._01_Vybornov.Pages
                 {
                     using (var context = new ConferenceDBEntities())
                     {
-                        // Проверяем, зарегистрирован ли пользователь на это мероприятие
                         _currentRegistration = context.event_registrations
                             .FirstOrDefault(r => r.event_id == _eventId && r.user_id == _currentUser.user_id);
 
                         if (_currentRegistration != null)
                         {
-                            // Пользователь уже зарегистрирован
                             UpdateRegistrationStatus(true);
                         }
                         else
                         {
-                            // Пользователь не зарегистрирован
                             UpdateRegistrationStatus(false);
                         }
                     }
@@ -271,21 +246,17 @@ namespace UP._02._01_Vybornov.Pages
         {
             if (isRegistered && _currentRegistration != null)
             {
-                // Показываем статус регистрации
                 RegistrationStatusBorder.Visibility = Visibility.Visible;
                 RegistrationStatusText.Text = $"Вы зарегистрированы на это мероприятие ({_currentRegistration.registration_date:dd.MM.yyyy})";
 
-                // Обновляем кнопки
                 RegisterButton.Visibility = Visibility.Collapsed;
                 CancelRegistrationButton.Visibility = Visibility.Visible;
                 RegistrationInfoText.Text = "Ваша регистрация подтверждена. Вы можете отменить её, если передумаете.";
             }
             else
             {
-                // Скрываем статус регистрации
                 RegistrationStatusBorder.Visibility = Visibility.Collapsed;
 
-                // Обновляем кнопки
                 RegisterButton.Visibility = Visibility.Visible;
                 CancelRegistrationButton.Visibility = Visibility.Collapsed;
                 RegistrationInfoText.Text = "Нажмите кнопку, чтобы зарегистрироваться на это мероприятие.";
@@ -307,7 +278,6 @@ namespace UP._02._01_Vybornov.Pages
             {
                 using (var context = new ConferenceDBEntities())
                 {
-                    // Проверяем, не занята ли уже эта активность другим модератором
                     var existingModerator = context.moderator_activities
                         .FirstOrDefault(ma => ma.activity_id == selectedActivity.activity_id);
 
@@ -318,7 +288,6 @@ namespace UP._02._01_Vybornov.Pages
                         return;
                     }
 
-                    // Добавляем модератора к активности
                     var moderatorActivity = new moderator_activities
                     {
                         activity_id = selectedActivity.activity_id,
@@ -331,7 +300,6 @@ namespace UP._02._01_Vybornov.Pages
                     MessageBox.Show($"Вы успешно зарегистрированы как модератор на активность:\n\"{selectedActivity.activity_name}\"",
                         "Успешно", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                    // Обновляем список доступных активностей
                     LoadUserRoles();
                 }
             }
@@ -357,7 +325,6 @@ namespace UP._02._01_Vybornov.Pages
             {
                 using (var context = new ConferenceDBEntities())
                 {
-                    // Проверяем, не зарегистрирован ли уже пользователь на эту активность как жюри
                     var existingJury = context.jury_activities
                         .FirstOrDefault(ja => ja.activity_id == selectedActivity.activity_id &&
                                              ja.jury_id == _currentUser.user_id);
@@ -369,7 +336,6 @@ namespace UP._02._01_Vybornov.Pages
                         return;
                     }
 
-                    // Добавляем жюри к активности
                     var juryActivity = new jury_activities
                     {
                         activity_id = selectedActivity.activity_id,
@@ -382,7 +348,6 @@ namespace UP._02._01_Vybornov.Pages
                     MessageBox.Show($"Вы успешно зарегистрированы как жюри на активность:\n\"{selectedActivity.activity_name}\"",
                         "Успешно", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                    // Обновляем списки
                     LoadUserRoles();
                 }
             }
@@ -425,7 +390,6 @@ namespace UP._02._01_Vybornov.Pages
                             MessageBox.Show("Вы успешно удалены как жюри из этой активности",
                                 "Успешно", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                            // Обновляем списки
                             LoadUserRoles();
                         }
                     }
@@ -451,7 +415,6 @@ namespace UP._02._01_Vybornov.Pages
             {
                 using (var context = new ConferenceDBEntities())
                 {
-                    // Проверяем, не зарегистрирован ли уже пользователь
                     var existingRegistration = context.event_registrations
                         .FirstOrDefault(r => r.event_id == _eventId && r.user_id == _currentUser.user_id);
 
@@ -462,7 +425,6 @@ namespace UP._02._01_Vybornov.Pages
                         return;
                     }
 
-                    // Создаем новую регистрацию
                     var registration = new event_registrations
                     {
                         event_id = _eventId,
@@ -479,7 +441,6 @@ namespace UP._02._01_Vybornov.Pages
                     MessageBox.Show("Вы успешно зарегистрированы на мероприятие!",
                         "Успешно", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                    // Обновляем UI
                     UpdateRegistrationStatus(true);
                 }
             }
@@ -521,7 +482,6 @@ namespace UP._02._01_Vybornov.Pages
                             MessageBox.Show("Регистрация успешно отменена",
                                 "Успешно", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                            // Обновляем UI
                             UpdateRegistrationStatus(false);
                         }
                     }
@@ -534,10 +494,8 @@ namespace UP._02._01_Vybornov.Pages
             }
         }
 
-        // Новый метод для просмотра участников
         private void ViewParticipantsButtonClick(object sender, RoutedEventArgs e)
         {
-            // Проверяем, доступна ли эта функция для текущей роли
             if (_currentUser != null && (_currentRole == "модератор" || _currentRole == "жюри" || _currentRole == "организатор"))
             {
                 var participantsPage = new ParticipantsPage(_eventId, _currentUser, _currentRole);
@@ -576,7 +534,6 @@ namespace UP._02._01_Vybornov.Pages
 
         private void LoginForActionsButtonClick(object sender, RoutedEventArgs e)
         {
-            // Переход на страницу входа с возвратом на эту страницу
             var loginPage = new LoginPage();
             loginPage.ReturnToEventId = _eventId;
             NavigationService.Navigate(loginPage);

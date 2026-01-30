@@ -43,7 +43,6 @@ namespace UP._02._01_Vybornov
 
             UpdateUserInterface(e.User, e.RoleName);
 
-            // Если пользователь - организатор, переходим на страницу организатора
             if (e.RoleName.ToLower() == "организатор")
             {
                 NavigateToOrganizerPage();
@@ -54,14 +53,12 @@ namespace UP._02._01_Vybornov
             }
         }
 
-        // Добавляем метод для перехода на страницу организатора
         private void NavigateToOrganizerPage()
         {
             var organizerPage = new OrganizerPage(_currentUser);
             MainFrame.Navigate(organizerPage);
         }
 
-        // Обновляем существующий метод NavigateToEventsPage
         private void NavigateToEventsPage()
         {
             var eventsPage = new EventsPage(_currentUser, _currentRole);
@@ -87,7 +84,6 @@ namespace UP._02._01_Vybornov
 
                 UserInfoTextBlock.Text = $"{firstName}";
 
-                // Форматируем отображение роли с правильным склонением
                 string roleDisplay = FormatRoleDisplay(role);
                 UserRoleTextBlock.Text = roleDisplay;
 

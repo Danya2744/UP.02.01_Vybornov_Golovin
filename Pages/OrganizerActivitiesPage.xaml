@@ -88,7 +88,6 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Шапка -->
         <Border Grid.Row="0" 
                 Background="{StaticResource PrimaryBackground}" 
                 Padding="15"
@@ -110,7 +109,6 @@
             </DockPanel>
         </Border>
 
-        <!-- Панель управления -->
         <Border Grid.Row="1" 
                 Background="{StaticResource PrimaryBackground}" 
                 Padding="15"
@@ -122,9 +120,7 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Фильтры, поиск и сортировка -->
                 <StackPanel Grid.Column="0" Orientation="Vertical">
-                    <!-- Поиск -->
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                         <TextBlock Text="Поиск:" 
                                   FontSize="14"
@@ -143,9 +139,7 @@
                         </TextBox>
                     </StackPanel>
 
-                    <!-- Фильтр по мероприятию и сортировка -->
                     <StackPanel Orientation="Horizontal">
-                        <!-- Фильтр по мероприятию -->
                         <StackPanel Orientation="Vertical" Margin="0,0,20,0">
                             <TextBlock Text="Мероприятие:" 
                                       FontSize="14"
@@ -157,7 +151,6 @@
                                      SelectionChanged="EventFilterComboBox_SelectionChanged"/>
                         </StackPanel>
 
-                        <!-- Сортировка -->
                         <StackPanel Orientation="Vertical">
                             <TextBlock Text="Сортировка:" 
                                       FontSize="14"
@@ -178,7 +171,6 @@
                     </StackPanel>
                 </StackPanel>
 
-                <!-- Кнопки управления -->
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
                     <Button x:Name="AddActivityButton"
                             Content="+ Добавить активность"
@@ -194,7 +186,6 @@
             </Grid>
         </Border>
 
-        <!-- Список активностей -->
         <ScrollViewer Grid.Row="2" 
                      VerticalScrollBarVisibility="Auto"
                      Padding="20">
@@ -210,9 +201,7 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
 
-                                <!-- Информация об активности -->
                                 <StackPanel Grid.Column="0">
-                                    <!-- Заголовок и статус -->
                                     <Grid Margin="0,0,0,10">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
@@ -226,7 +215,6 @@
                                                   Foreground="{StaticResource AccentColor}"
                                                   TextWrapping="Wrap"/>
 
-                                        <!-- Статус (есть жюри или нет) -->
                                         <Border Grid.Column="1"
                                                 Background="{Binding HasJuryColor}"
                                                 CornerRadius="12"
@@ -239,7 +227,6 @@
                                         </Border>
                                     </Grid>
 
-                                    <!-- Детали -->
                                     <StackPanel>
                                         <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
                                             <TextBlock Text="Мероприятие:" 
@@ -278,7 +265,6 @@
                                                       FontSize="12"/>
                                         </StackPanel>
 
-                                        <!-- Описание -->
                                         <StackPanel Margin="0,10,0,0">
                                             <TextBlock Text="Описание:" 
                                                       FontSize="12"
@@ -299,7 +285,6 @@
                                     </StackPanel>
                                 </StackPanel>
 
-                                <!-- Кнопки действий -->
                                 <StackPanel Grid.Column="2" 
                                            VerticalAlignment="Center"
                                            Margin="20,0,0,0">

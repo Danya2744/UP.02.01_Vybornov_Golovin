@@ -38,7 +38,6 @@ namespace UP._02._01_Vybornov.Pages
             {
                 using (var context = new ConferenceDBEntities())
                 {
-                    // Загружаем мероприятия, где текущий пользователь является организатором
                     _allEvents = context.events
                         .Where(e => e.organizer_id == _currentUser.user_id)
                         .OrderBy(e => e.start_date)
@@ -46,7 +45,6 @@ namespace UP._02._01_Vybornov.Pages
 
                     EventFilterComboBox.Items.Clear();
 
-                    // Добавляем элемент "Все мероприятия"
                     var allItem = new ComboBoxItem { Content = "Все мероприятия", Tag = "all" };
                     EventFilterComboBox.Items.Add(allItem);
 
@@ -60,7 +58,6 @@ namespace UP._02._01_Vybornov.Pages
                         EventFilterComboBox.Items.Add(item);
                     }
 
-                    // Выбираем элемент по умолчанию
                     if (_selectedEventId.HasValue)
                     {
                         foreach (ComboBoxItem item in EventFilterComboBox.Items)
@@ -101,7 +98,6 @@ namespace UP._02._01_Vybornov.Pages
                     {
                         var eventObj = events.FirstOrDefault(e => e.event_id == activity.event_id);
 
-                        // Показываем только активности мероприятий, где пользователь организатор
                         if (eventObj?.organizer_id != _currentUser.user_id)
                             continue;
 
@@ -116,20 +112,17 @@ namespace UP._02._01_Vybornov.Pages
                             DurationMinutes = activity.duration_minutes ?? 90
                         };
 
-                        // Информация о мероприятии
                         if (eventObj != null)
                         {
                             viewModel.EventName = eventObj.event_name;
                             viewModel.EventStartDate = eventObj.start_date;
                         }
 
-                        // Проверяем, есть ли жюри у этой активности
                         bool hasJury = juryActivities.Any(ja => ja.activity_id == activity.activity_id);
                         viewModel.HasJury = hasJury;
                         viewModel.HasJuryText = hasJury ? "Есть жюри" : "Нет жюри";
                         viewModel.HasJuryColor = hasJury ? Brushes.Orange : Brushes.Green;
 
-                        // Форматируем время
                         viewModel.StartTimeFormatted = activity.start_time.ToString(@"hh\:mm");
                         viewModel.Duration = $"{viewModel.DurationMinutes} мин.";
 
@@ -150,7 +143,6 @@ namespace UP._02._01_Vybornov.Pages
         {
             var filteredActivities = _allActivities.AsEnumerable();
 
-            // Применяем поиск
             if (!string.IsNullOrEmpty(SearchTextBox.Text))
             {
                 string searchText = SearchTextBox.Text.ToLower();
@@ -159,7 +151,6 @@ namespace UP._02._01_Vybornov.Pages
                     (a.Description?.ToLower() ?? "").Contains(searchText));
             }
 
-            // Применяем фильтр по мероприятию
             if (EventFilterComboBox.SelectedItem is ComboBoxItem selectedItem)
             {
                 if (selectedItem.Tag?.ToString() != "all" && selectedItem.Tag is int eventId)
@@ -168,7 +159,6 @@ namespace UP._02._01_Vybornov.Pages
                 }
             }
 
-            // Применяем сортировку
             if (_sortAscending)
             {
                 filteredActivities = filteredActivities
@@ -184,7 +174,6 @@ namespace UP._02._01_Vybornov.Pages
                     .ThenByDescending(a => a.StartTime);
             }
 
-            // Обновляем список
             ActivitiesItemsControl.ItemsSource = filteredActivities.ToList();
         }
 
@@ -214,7 +203,6 @@ namespace UP._02._01_Vybornov.Pages
 
         private void AddActivityButton_Click(object sender, RoutedEventArgs e)
         {
-            // Проверяем, не открыто ли уже окно редактирования
             if (_currentEditWindow != null)
             {
                 MessageBox.Show("Пожалуйста, закройте окно редактирования перед созданием новой активности.",
@@ -225,7 +213,6 @@ namespace UP._02._01_Vybornov.Pages
                 return;
             }
 
-            // Открываем окно добавления активности
             _currentEditWindow = new AddEditActivityWindow(_currentUser);
             _currentEditWindow.Closed += EditWindow_Closed;
             _currentEditWindow.ShowDialog();
@@ -249,7 +236,6 @@ namespace UP._02._01_Vybornov.Pages
 
         private void OpenEditWindow(int activityId)
         {
-            // Проверяем, не открыто ли уже окно редактирования
             if (_currentEditWindow != null)
             {
                 MessageBox.Show("Пожалуйста, закройте текущее окно редактирования перед открытием другого.",
@@ -260,7 +246,6 @@ namespace UP._02._01_Vybornov.Pages
                 return;
             }
 
-            // Открываем окно редактирования активности
             _currentEditWindow = new AddEditActivityWindow(_currentUser, activityId);
             _currentEditWindow.Closed += EditWindow_Closed;
             _currentEditWindow.ShowDialog();
@@ -270,7 +255,6 @@ namespace UP._02._01_Vybornov.Pages
         {
             if (_currentEditWindow != null)
             {
-                // Обновляем список после закрытия окна
                 if (_currentEditWindow.IsSaved)
                 {
                     LoadActivities();
@@ -289,7 +273,6 @@ namespace UP._02._01_Vybornov.Pages
                 {
                     using (var context = new ConferenceDBEntities())
                     {
-                        // Находим активность
                         var activity = context.activities.Find(activityId);
                         if (activity == null)
                         {
@@ -300,7 +283,6 @@ namespace UP._02._01_Vybornov.Pages
                             return;
                         }
 
-                        // Проверяем, есть ли жюри у активности
                         bool hasJury = context.jury_activities.Any(ja => ja.activity_id == activityId);
                         if (hasJury)
                         {
@@ -322,13 +304,11 @@ namespace UP._02._01_Vybornov.Pages
 
                         if (result == MessageBoxResult.Yes)
                         {
-                            // Удаляем связанные записи (модераторы)
                             var moderatorActivities = context.moderator_activities
                                 .Where(ma => ma.activity_id == activityId)
                                 .ToList();
                             context.moderator_activities.RemoveRange(moderatorActivities);
 
-                            // Удаляем активность
                             context.activities.Remove(activity);
                             context.SaveChanges();
 
@@ -337,7 +317,6 @@ namespace UP._02._01_Vybornov.Pages
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Information);
 
-                            // Обновляем список
                             LoadActivities();
                         }
                     }
@@ -385,7 +364,6 @@ namespace UP._02._01_Vybornov.Pages
                 MessageBoxImage.Information);
         }
 
-        // Класс для отображения активностей
         public class ActivityViewModel
         {
             public int ActivityId { get; set; }

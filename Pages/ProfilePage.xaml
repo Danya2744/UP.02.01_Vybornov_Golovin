@@ -78,7 +78,6 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Шапка -->
         <Border Grid.Row="0" 
                 Background="{StaticResource PrimaryBackground}" 
                 Padding="15"
@@ -100,7 +99,6 @@
             </DockPanel>
         </Border>
 
-        <!-- Контент профиля -->
         <ScrollViewer Grid.Row="1" 
                      VerticalScrollBarVisibility="Auto"
                      Padding="20">
@@ -110,7 +108,6 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Левая колонка - фото и основная информация -->
                 <StackPanel Grid.Column="0" Margin="0,0,20,0">
                     <Border Background="{StaticResource PrimaryBackground}"
                             BorderBrush="{StaticResource BorderColor}"
@@ -118,7 +115,6 @@
                             CornerRadius="8"
                             Padding="20">
                         <StackPanel>
-                            <!-- Фото пользователя с возможностью изменения -->
                             <Grid Width="150" 
                                   Height="150"
                                   HorizontalAlignment="Center"
@@ -127,7 +123,6 @@
                                   MouseEnter="Grid_MouseEnter"
                                   MouseLeave="Grid_MouseLeave"
                                   MouseLeftButtonDown="Grid_MouseLeftButtonDown">
-                                <!-- Основной Border для фото -->
                                 <Border Background="{StaticResource SecondaryBackground}"
                                         CornerRadius="75">
                                     <Image x:Name="UserPhotoImage"
@@ -136,7 +131,6 @@
                                            VerticalAlignment="Center"/>
                                 </Border>
 
-                                <!-- Наложение для изменения фото -->
                                 <Border x:Name="PhotoOverlay"
                                         Background="#80000000"
                                         CornerRadius="75"
@@ -157,13 +151,11 @@
                                       Margin="0,-15,0,20"
                                       FontStyle="Italic"/>
 
-                            <!-- ID Number (неизменяемый) -->
                             <TextBlock Text="ID Number:" 
                                       Style="{StaticResource FormLabelStyle}"/>
                             <TextBox x:Name="IdNumberTextBox"
                                     Style="{StaticResource ReadOnlyFieldStyle}"/>
 
-                            <!-- Роль -->
                             <TextBlock Text="Роль:" 
                                       Style="{StaticResource FormLabelStyle}"/>
                             <TextBox x:Name="RoleTextBox"
@@ -172,7 +164,6 @@
                     </Border>
                 </StackPanel>
 
-                <!-- Правая колонка - редактируемые поля -->
                 <StackPanel Grid.Column="1">
                     <Border Background="{StaticResource PrimaryBackground}"
                             BorderBrush="{StaticResource BorderColor}"
@@ -186,7 +177,6 @@
                                       Foreground="{StaticResource AccentColor}"
                                       Margin="0,0,0,20"/>
 
-                            <!-- ФИО -->
                             <TextBlock Text="ФИО:" 
                                       Style="{StaticResource FormLabelStyle}"/>
                             <TextBox x:Name="FullNameTextBox"
@@ -196,7 +186,6 @@
                                       Style="{StaticResource ErrorTextStyle}"
                                       Text="Поле ФИО обязательно для заполнения"/>
 
-                            <!-- Телефон -->
                             <TextBlock Text="Телефон:" 
                                       Style="{StaticResource FormLabelStyle}"/>
                             <TextBox x:Name="PhoneTextBox"
@@ -206,7 +195,6 @@
                                       Style="{StaticResource ErrorTextStyle}"
                                       Text="Введите корректный номер телефона (например: +7(999)123-45-67)"/>
 
-                            <!-- Дата рождения -->
                             <TextBlock Text="Дата рождения:" 
                                       Style="{StaticResource FormLabelStyle}"/>
                             <DatePicker x:Name="BirthDatePicker"
@@ -220,14 +208,12 @@
                                       Style="{StaticResource ErrorTextStyle}"
                                       Text="Дата рождения не может быть в будущем"/>
 
-                            <!-- Смена пароля -->
                             <TextBlock Text="Смена пароля" 
                                       FontSize="16"
                                       FontWeight="Bold"
                                       Foreground="{StaticResource AccentColor}"
                                       Margin="0,20,0,10"/>
 
-                            <!-- Старый пароль -->
                             <TextBlock Text="Текущий пароль:" 
                                       Style="{StaticResource FormLabelStyle}"/>
                             <PasswordBox x:Name="CurrentPasswordBox"
@@ -240,7 +226,6 @@
                                       Style="{StaticResource ErrorTextStyle}"
                                       Text="Необходимо ввести текущий пароль"/>
 
-                            <!-- Новый пароль -->
                             <TextBlock Text="Новый пароль:" 
                                       Style="{StaticResource FormLabelStyle}"/>
                             <PasswordBox x:Name="NewPasswordBox"
@@ -253,7 +238,6 @@
                                       Style="{StaticResource ErrorTextStyle}"
                                       Text="Пароль должен содержать минимум 6 символов"/>
 
-                            <!-- Повтор нового пароля -->
                             <TextBlock Text="Повторите новый пароль:" 
                                       Style="{StaticResource FormLabelStyle}"/>
                             <PasswordBox x:Name="ConfirmPasswordBox"
@@ -266,7 +250,6 @@
                                       Style="{StaticResource ErrorTextStyle}"
                                       Text="Пароли не совпадают"/>
 
-                            <!-- Кнопки -->
                             <StackPanel Orientation="Horizontal" 
                                        HorizontalAlignment="Right"
                                        Margin="0,20,0,0">

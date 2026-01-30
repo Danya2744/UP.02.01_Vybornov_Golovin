@@ -27,7 +27,6 @@ namespace UP._02._01_Vybornov.Pages
 
         private void InitializeValidation()
         {
-            // Подписываемся на события изменения полей
             FullNameTextBox.TextChanged += ValidateField_TextChanged;
             PhoneTextBox.TextChanged += ValidateField_TextChanged;
             CurrentPasswordBox.PasswordChanged += PasswordField_PasswordChanged;
@@ -55,7 +54,6 @@ namespace UP._02._01_Vybornov.Pages
             {
                 using (var context = new ConferenceDBEntities())
                 {
-                    // Загружаем данные пользователя
                     var user = context.users.FirstOrDefault(u => u.user_id == _currentUser.user_id);
 
                     if (user == null)
@@ -66,7 +64,6 @@ namespace UP._02._01_Vybornov.Pages
                         return;
                     }
 
-                    // Заполняем поля
                     IdNumberTextBox.Text = user.id_number;
                     FullNameTextBox.Text = user.full_name;
                     PhoneTextBox.Text = user.phone ?? "";
@@ -76,11 +73,9 @@ namespace UP._02._01_Vybornov.Pages
                         BirthDatePicker.SelectedDate = user.birth_date.Value;
                     }
 
-                    // Роль
                     var role = context.roles.FirstOrDefault(r => r.role_id == user.role_id);
                     RoleTextBox.Text = role?.role_name ?? "Не указана";
 
-                    // Фото пользователя
                     LoadUserPhoto(user.photo_path);
                 }
             }
@@ -99,31 +94,53 @@ namespace UP._02._01_Vybornov.Pages
                 {
                     try
                     {
-                        // Проверяем, существует ли файл
-                        if (File.Exists(photoPath))
+                        BitmapImage bitmap = new BitmapImage();
+                        bitmap.BeginInit();
+
+                        if (photoPath.StartsWith("http") || Path.IsPathRooted(photoPath))
                         {
-                            UserPhotoImage.Source = new BitmapImage(new Uri(photoPath, UriKind.Absolute));
+                            bitmap.UriSource = new Uri(photoPath, UriKind.Absolute);
                         }
                         else
                         {
-                            // Если путь относительный, пробуем загрузить из ресурсов
                             string relativePath = photoPath.StartsWith("/") ? photoPath : "/" + photoPath;
-                            UserPhotoImage.Source = new BitmapImage(new Uri(relativePath, UriKind.Relative));
+                            bitmap.UriSource = new Uri(relativePath, UriKind.Relative);
                         }
+
+                        bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                        bitmap.EndInit();
+                        UserPhotoImage.Source = bitmap;
                     }
                     catch
                     {
-                        UserPhotoImage.Source = new BitmapImage(new Uri("/Resources/default_user.png", UriKind.Relative));
+                        SetDefaultPhoto();
                     }
                 }
                 else
                 {
-                    UserPhotoImage.Source = new BitmapImage(new Uri("/Resources/default_user.png", UriKind.Relative));
+                    SetDefaultPhoto();
                 }
             }
             catch
             {
-                UserPhotoImage.Source = new BitmapImage(new Uri("/Resources/default_user.png", UriKind.Relative));
+                SetDefaultPhoto();
+            }
+        }
+
+        private void SetDefaultPhoto()
+        {
+            try
+            {
+                BitmapImage defaultBitmap = new BitmapImage();
+                defaultBitmap.BeginInit();
+                defaultBitmap.UriSource = new Uri("/Resources/default_user.png", UriKind.Relative);
+                defaultBitmap.CacheOption = BitmapCacheOption.OnLoad;
+                defaultBitmap.EndInit();
+                UserPhotoImage.Source = defaultBitmap;
+            }
+            catch
+            {
+                UserPhotoImage.Source = null;
             }
         }
 
@@ -142,7 +159,6 @@ namespace UP._02._01_Vybornov.Pages
 
         private void CancelButtonClick(object sender, RoutedEventArgs e)
         {
-            // Сбрасываем изменения
             LoadUserProfile();
             ClearPasswordFields();
             HideAllErrorMessages();
@@ -163,46 +179,42 @@ namespace UP._02._01_Vybornov.Pages
                     if (user == null)
                         return;
 
-                    // Обновляем данные
                     user.full_name = FullNameTextBox.Text.Trim();
                     user.phone = string.IsNullOrWhiteSpace(PhoneTextBox.Text) ? null : PhoneTextBox.Text.Trim();
                     user.birth_date = BirthDatePicker.SelectedDate;
 
-                    // Обработка нового фото
                     if (!string.IsNullOrEmpty(_newPhotoPath))
                     {
-                        // Сохраняем фото в папку Resources
-                        string resourcesPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources");
+                        string projectPath = System.AppDomain.CurrentDomain.BaseDirectory;
+                        string resourcesPath = Path.Combine(projectPath, "Resources");
 
-                        // Создаем папку Resources, если она не существует
                         if (!Directory.Exists(resourcesPath))
                         {
                             Directory.CreateDirectory(resourcesPath);
                         }
 
-                        // Генерируем уникальное имя файла
                         string fileName = $"user_{user.user_id}_{DateTime.Now:yyyyMMddHHmmss}{Path.GetExtension(_newPhotoPath)}";
                         string destinationPath = Path.Combine(resourcesPath, fileName);
 
                         try
                         {
-                            // Копируем файл в папку Resources
                             File.Copy(_newPhotoPath, destinationPath, true);
 
-                            // Сохраняем относительный путь в базу данных
-                            user.photo_path = $"/Resources/{fileName}";
+                            user.photo_path = $"Resources/{fileName}";
 
-                            // Обновляем изображение
                             LoadUserPhoto(user.photo_path);
+
+                            MessageBox.Show("Фото профиля успешно сохранено", "Успех",
+                                MessageBoxButton.OK, MessageBoxImage.Information);
                         }
                         catch (Exception ex)
                         {
                             MessageBox.Show($"Ошибка сохранения фото: {ex.Message}", "Ошибка",
                                 MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
                         }
                     }
 
-                    // Смена пароля
                     if (_isPasswordChanging)
                     {
                         if (user.password_hash != CurrentPasswordBox.Password)
@@ -217,13 +229,11 @@ namespace UP._02._01_Vybornov.Pages
 
                     context.SaveChanges();
 
-                    // Обновляем текущего пользователя
                     _currentUser = user;
 
                     MessageBox.Show("Данные успешно сохранены", "Успех",
                         MessageBoxButton.OK, MessageBoxImage.Information);
 
-                    // Очищаем поля паролей
                     ClearPasswordFields();
                     HideAllErrorMessages();
                     _newPhotoPath = null;
@@ -236,7 +246,6 @@ namespace UP._02._01_Vybornov.Pages
             }
         }
 
-        // Обработчики для изменения фото
         private void PhotoBorder_MouseEnter(object sender, MouseEventArgs e)
         {
             PhotoOverlay.Opacity = 0.7;
@@ -265,16 +274,14 @@ namespace UP._02._01_Vybornov.Pages
             {
                 try
                 {
-                    // Проверяем размер файла (максимум 5MB)
                     FileInfo fileInfo = new FileInfo(openFileDialog.FileName);
-                    if (fileInfo.Length > 5 * 1024 * 1024) // 5MB
+                    if (fileInfo.Length > 5 * 1024 * 1024) 
                     {
                         MessageBox.Show("Размер файла не должен превышать 5MB", "Ошибка",
                             MessageBoxButton.OK, MessageBoxImage.Warning);
                         return;
                     }
 
-                    // Загружаем изображение для предпросмотра
                     BitmapImage bitmap = new BitmapImage();
                     bitmap.BeginInit();
                     bitmap.UriSource = new Uri(openFileDialog.FileName);
@@ -283,10 +290,9 @@ namespace UP._02._01_Vybornov.Pages
 
                     UserPhotoImage.Source = bitmap;
 
-                    // Сохраняем путь к новому фото
                     _newPhotoPath = openFileDialog.FileName;
 
-                    MessageBox.Show("Фото загружено. Нажмите 'Сохранить изменения' для применения.",
+                    MessageBox.Show("Фото загружено. Нажмите 'Сохранить изменения' для сохранения.",
                         "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception ex)
@@ -305,7 +311,6 @@ namespace UP._02._01_Vybornov.Pages
 
             bool isValid = true;
 
-            // Валидация ФИО
             if (string.IsNullOrWhiteSpace(FullNameTextBox.Text))
             {
                 ShowError(FullNameErrorText, "Поле ФИО обязательно для заполнения");
@@ -322,7 +327,6 @@ namespace UP._02._01_Vybornov.Pages
                 isValid = false;
             }
 
-            // Валидация телефона
             if (!string.IsNullOrWhiteSpace(PhoneTextBox.Text))
             {
                 string phone = PhoneTextBox.Text.Trim();
@@ -333,7 +337,6 @@ namespace UP._02._01_Vybornov.Pages
                 }
             }
 
-            // Валидация даты рождения
             if (BirthDatePicker.SelectedDate.HasValue)
             {
                 if (BirthDatePicker.SelectedDate.Value > DateTime.Now)
@@ -353,7 +356,6 @@ namespace UP._02._01_Vybornov.Pages
                 }
             }
 
-            // Валидация паролей
             bool anyPasswordFilled = !string.IsNullOrEmpty(CurrentPasswordBox.Password) ||
                                      !string.IsNullOrEmpty(NewPasswordBox.Password) ||
                                      !string.IsNullOrEmpty(ConfirmPasswordBox.Password);
@@ -402,14 +404,11 @@ namespace UP._02._01_Vybornov.Pages
 
         private bool IsValidPhoneNumber(string phone)
         {
-            // Простая валидация телефона
             if (string.IsNullOrWhiteSpace(phone))
                 return true;
 
-            // Удаляем все нецифровые символы
             string digitsOnly = Regex.Replace(phone, @"[^\d]", "");
 
-            // Проверяем длину номера (с кодом страны минимум 10 цифр)
             return digitsOnly.Length >= 10 && digitsOnly.Length <= 15;
         }
 
@@ -432,21 +431,6 @@ namespace UP._02._01_Vybornov.Pages
         {
             errorTextBlock.Text = message;
             errorTextBlock.Visibility = Visibility.Visible;
-        }
-
-        private void Grid_MouseEnter(object sender, MouseEventArgs e)
-        {
-            PhotoOverlay.Opacity = 0.7;
-        }
-
-        private void Grid_MouseLeave(object sender, MouseEventArgs e)
-        {
-            PhotoOverlay.Opacity = 0;
-        }
-
-        private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            ChangeProfilePhoto();
         }
 
         private void HideAllErrorMessages()
@@ -483,6 +467,21 @@ namespace UP._02._01_Vybornov.Pages
             {
                 return "участник";
             }
+        }
+
+        private void Grid_MouseEnter(object sender, MouseEventArgs e)
+        {
+            PhotoOverlay.Opacity = 0.7;
+        }
+
+        private void Grid_MouseLeave(object sender, MouseEventArgs e)
+        {
+            PhotoOverlay.Opacity = 0;
+        }
+
+        private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            ChangeProfilePhoto();
         }
     }
 }

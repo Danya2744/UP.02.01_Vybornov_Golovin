@@ -41,7 +41,6 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Шапка -->
         <Border Grid.Row="0" 
                 Background="{StaticResource PrimaryBackground}" 
                 Padding="15"
@@ -65,12 +64,10 @@
             </DockPanel>
         </Border>
 
-        <!-- Контент -->
         <ScrollViewer Grid.Row="1" 
                      VerticalScrollBarVisibility="Auto"
                      Padding="20">
             <StackPanel>
-                <!-- Информация о мероприятии -->
                 <Border Background="{StaticResource PrimaryBackground}"
                         BorderBrush="{StaticResource BorderColor}"
                         BorderThickness="1"
@@ -90,14 +87,12 @@
                     </StackPanel>
                 </Border>
 
-                <!-- Заголовок участников -->
                 <TextBlock Text="Зарегистрированные участники:" 
                           FontSize="18"
                           FontWeight="Bold"
                           Foreground="{StaticResource AccentColor}"
                           Margin="0,0,0,10"/>
 
-                <!-- Список участников -->
                 <ItemsControl x:Name="ParticipantsItemsControl">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
@@ -108,7 +103,6 @@
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
 
-                                    <!-- Фото участника -->
                                     <Border Grid.Column="0" 
                                             Width="50" 
                                             Height="50"
@@ -119,7 +113,6 @@
                                                Stretch="Uniform"/>
                                     </Border>
 
-                                    <!-- Информация об участнике -->
                                     <StackPanel Grid.Column="1">
                                         <TextBlock Text="{Binding FullName}"
                                                   FontSize="14"
@@ -151,7 +144,6 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <!-- Если участников нет -->
                 <TextBlock x:Name="NoParticipantsText"
                           Text="На это мероприятие еще не зарегистрировались участники"
                           FontSize="14"

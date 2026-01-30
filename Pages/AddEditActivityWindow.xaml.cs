@@ -16,7 +16,6 @@ namespace UP._02._01_Vybornov.Pages
         private List<events> _events = new List<events>();
         private List<activities> _existingActivities = new List<activities>();
 
-        // Конструктор для добавления новой активности
         public AddEditActivityWindow(users currentUser)
         {
             InitializeComponent();
@@ -26,7 +25,6 @@ namespace UP._02._01_Vybornov.Pages
             Loaded += AddEditActivityWindow_Loaded;
         }
 
-        // Конструктор для редактирования существующей активности
         public AddEditActivityWindow(users currentUser, int activityId)
         {
             InitializeComponent();
@@ -48,54 +46,42 @@ namespace UP._02._01_Vybornov.Pages
             {
                 using (var context = new ConferenceDBEntities())
                 {
-                    // Загружаем мероприятия, где текущий пользователь является организатором
                     _events = context.events
                         .Where(e => e.organizer_id == _currentUser.user_id)
                         .OrderBy(e => e.start_date)
                         .ToList();
                     EventComboBox.ItemsSource = _events;
 
-                    // Загружаем существующие активности ДРУГИМ СПОСОБОМ
-                    // Сначала получаем ID мероприятий
                     var eventIds = _events.Select(e => e.event_id).ToList();
 
-                    // Теперь загружаем активности для этих мероприятий
                     _existingActivities = context.activities
                         .Where(a => eventIds.Contains(a.event_id))
                         .ToList();
 
                     if (_isEditMode)
                     {
-                        // Режим редактирования
                         TitleTextBlock.Text = "Редактирование активности";
                         Title = "Редактирование активности";
 
-                        // Загружаем данные активности
                         var activity = context.activities.Find(_activityId);
                         if (activity != null)
                         {
-                            // ID
                             ActivityIdLabel.Visibility = Visibility.Visible;
                             ActivityIdTextBox.Visibility = Visibility.Visible;
                             ActivityIdTextBox.Text = activity.activity_id.ToString();
 
-                            // Название
                             NameTextBox.Text = activity.activity_name;
 
-                            // Описание
                             DescriptionTextBox.Text = activity.description;
 
-                            // Мероприятие
                             var ev = _events.FirstOrDefault(e => e.event_id == activity.event_id);
                             EventComboBox.SelectedItem = ev;
 
-                            // Загружаем дни и время после выбора мероприятия
                             if (ev != null)
                             {
                                 LoadDaysForEvent(ev.event_id);
                                 LoadAvailableTimes(ev.event_id, activity.activity_day, activity.start_time);
 
-                                // Выбираем день
                                 foreach (ComboBoxItem dayItem in DayComboBox.Items)
                                 {
                                     if (dayItem.Tag is int day && day == activity.activity_day)
@@ -105,7 +91,6 @@ namespace UP._02._01_Vybornov.Pages
                                     }
                                 }
 
-                                // Выбираем время
                                 foreach (ComboBoxItem timeItem in TimeComboBox.Items)
                                 {
                                     if (timeItem.Tag is TimeSpan time && time == activity.start_time)
@@ -198,13 +183,11 @@ namespace UP._02._01_Vybornov.Pages
                     var ev = context.events.Find(eventId);
                     if (ev == null) return;
 
-                    // Параметры дня
-                    TimeSpan dayStart = new TimeSpan(9, 0, 0); // 9:00
-                    TimeSpan dayEnd = new TimeSpan(18, 0, 0); // 18:00
-                    TimeSpan activityDuration = new TimeSpan(1, 30, 0); // 1 час 30 минут
-                    TimeSpan breakDuration = new TimeSpan(0, 15, 0); // 15 минут
+                    TimeSpan dayStart = new TimeSpan(9, 0, 0); 
+                    TimeSpan dayEnd = new TimeSpan(18, 0, 0); 
+                    TimeSpan activityDuration = new TimeSpan(1, 30, 0);
+                    TimeSpan breakDuration = new TimeSpan(0, 15, 0); 
 
-                    // Получаем существующие активности для этого дня и мероприятия
                     var existingActivities = _existingActivities
                         .Where(a => a.event_id == eventId && a.activity_day == day)
                         .OrderBy(a => a.start_time)
@@ -214,10 +197,8 @@ namespace UP._02._01_Vybornov.Pages
                     TimeSpan currentTimeSlot = dayStart;
                     int availableSlots = 0;
 
-                    // Пока текущее время + продолжительность активности не превышает конец дня
                     while (currentTimeSlot + activityDuration <= dayEnd)
                     {
-                        // Проверяем, не пересекается ли этот слот с существующими активностями
                         bool isSlotAvailable = true;
                         TimeSpan slotEnd = currentTimeSlot + activityDuration;
 
@@ -226,16 +207,13 @@ namespace UP._02._01_Vybornov.Pages
                             TimeSpan activityEnd = activity.start_time +
                                 TimeSpan.FromMinutes(activity.duration_minutes ?? 90);
 
-                            // Проверяем пересечение (включая обязательный перерыв в 15 минут)
                             if (currentTimeSlot < activityEnd + breakDuration &&
                                 slotEnd + breakDuration > activity.start_time)
                             {
-                                // Если это редактирование текущей активности, разрешаем ее же время
                                 if (_isEditMode && currentTime.HasValue &&
                                     activity.activity_id == _activityId &&
                                     currentTime.Value == activity.start_time)
                                 {
-                                    // Разрешаем текущее время редактируемой активности
                                     isSlotAvailable = true;
                                 }
                                 else
@@ -246,18 +224,15 @@ namespace UP._02._01_Vybornov.Pages
                             }
                         }
 
-                        // Если слот доступен, добавляем его в список
                         if (isSlotAvailable)
                         {
                             availableTimes.Add(currentTimeSlot);
                             availableSlots++;
                         }
 
-                        // Переходим к следующему слоту (активность + перерыв)
                         currentTimeSlot = currentTimeSlot.Add(activityDuration).Add(breakDuration);
                     }
 
-                    // Заполняем ComboBox доступными временами
                     foreach (var time in availableTimes)
                     {
                         var item = new ComboBoxItem
@@ -268,7 +243,6 @@ namespace UP._02._01_Vybornov.Pages
                         TimeComboBox.Items.Add(item);
                     }
 
-                    // Показываем информацию о доступных слотах
                     if (availableSlots > 0)
                     {
                         TimeInfoText.Text = $"Доступно {availableSlots} временных слотов. " +
@@ -286,7 +260,6 @@ namespace UP._02._01_Vybornov.Pages
                         TimeInfoBorder.BorderBrush = System.Windows.Media.Brushes.Red;
                     }
 
-                    // В режиме редактирования выбираем текущее время
                     if (_isEditMode && currentTime.HasValue)
                     {
                         foreach (ComboBoxItem item in TimeComboBox.Items)
@@ -311,34 +284,29 @@ namespace UP._02._01_Vybornov.Pages
         {
             bool isValid = true;
 
-            // Сбрасываем ошибки
             NameErrorText.Visibility = Visibility.Collapsed;
             EventErrorText.Visibility = Visibility.Collapsed;
             DayErrorText.Visibility = Visibility.Collapsed;
             TimeErrorText.Visibility = Visibility.Collapsed;
 
-            // Проверка названия
             if (string.IsNullOrWhiteSpace(NameTextBox.Text))
             {
                 NameErrorText.Visibility = Visibility.Visible;
                 isValid = false;
             }
 
-            // Проверка мероприятия
             if (EventComboBox.SelectedItem == null)
             {
                 EventErrorText.Visibility = Visibility.Visible;
                 isValid = false;
             }
 
-            // Проверка дня
             if (DayComboBox.SelectedItem == null)
             {
                 DayErrorText.Visibility = Visibility.Visible;
                 isValid = false;
             }
 
-            // Проверка времени
             if (TimeComboBox.SelectedItem == null)
             {
                 TimeErrorText.Visibility = Visibility.Visible;
@@ -365,7 +333,6 @@ namespace UP._02._01_Vybornov.Pages
                 {
                     if (_isEditMode)
                     {
-                        // Редактирование существующей активности
                         var activity = context.activities.Find(_activityId);
                         if (activity != null)
                         {
@@ -374,7 +341,7 @@ namespace UP._02._01_Vybornov.Pages
                             activity.event_id = ((events)EventComboBox.SelectedItem).event_id;
                             activity.activity_day = (int)((ComboBoxItem)DayComboBox.SelectedItem).Tag;
                             activity.start_time = (TimeSpan)((ComboBoxItem)TimeComboBox.SelectedItem).Tag;
-                            activity.duration_minutes = 90; // Фиксированная продолжительность
+                            activity.duration_minutes = 90; 
 
                             context.SaveChanges();
 
@@ -386,7 +353,6 @@ namespace UP._02._01_Vybornov.Pages
                     }
                     else
                     {
-                        // Добавление новой активности
                         var newActivity = new activities
                         {
                             activity_name = NameTextBox.Text.Trim(),
@@ -394,7 +360,7 @@ namespace UP._02._01_Vybornov.Pages
                             event_id = ((events)EventComboBox.SelectedItem).event_id,
                             activity_day = (int)((ComboBoxItem)DayComboBox.SelectedItem).Tag,
                             start_time = (TimeSpan)((ComboBoxItem)TimeComboBox.SelectedItem).Tag,
-                            duration_minutes = 90 // Фиксированная продолжительность
+                            duration_minutes = 90 
                         };
 
                         context.activities.Add(newActivity);

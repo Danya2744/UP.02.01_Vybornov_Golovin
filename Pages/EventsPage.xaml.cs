@@ -27,23 +27,25 @@ namespace UP._02._01_Vybornov.Pages
 
             Loaded += EventsPage_Loaded;
             UpdateNavigationButtons();
+
+            _myRegisteredEventIds = new List<int>();
+            _myModeratorEventIds = new List<int>();
+            _myJuryEventIds = new List<int>();
         }
 
         private void EventsPage_Loaded(object sender, RoutedEventArgs e)
         {
-            LoadEvents();
-            LoadDirections();
             LoadMyRegistrations();
+            LoadDirections();
+            LoadEvents();
         }
 
         private void UpdateNavigationButtons()
         {
             if (_currentUser != null)
             {
-                // Показываем кнопку профиля для всех авторизованных пользователей
                 ProfileButton.Visibility = Visibility.Visible;
 
-                // Показываем кнопку "Мои мероприятия" для участников, модераторов и жюри
                 if (_currentRole.ToLower() == "участник" ||
                     _currentRole.ToLower() == "модератор" ||
                     _currentRole.ToLower() == "жюри")
@@ -54,10 +56,11 @@ namespace UP._02._01_Vybornov.Pages
                 {
                     MyEventsButton.Visibility = Visibility.Collapsed;
                 }
+
+                UpdateMyEventsButtonAppearance();
             }
             else
             {
-                // Гость - скрываем все кнопки
                 MyEventsButton.Visibility = Visibility.Collapsed;
                 ProfileButton.Visibility = Visibility.Collapsed;
             }
@@ -71,16 +74,15 @@ namespace UP._02._01_Vybornov.Pages
                 {
                     using (var context = new ConferenceDBEntities())
                     {
-                        // Для участников: загружаем ID мероприятий из event_registrations
                         if (_currentRole.ToLower() == "участник")
                         {
                             _myRegisteredEventIds = context.event_registrations
-                                .Where(r => r.user_id == _currentUser.user_id)
+                                .Where(r => r.user_id == _currentUser.user_id && r.status.ToLower() != "cancelled")
                                 .Select(r => r.event_id)
+                                .Distinct()
                                 .ToList();
                         }
 
-                        // Для модераторов: загружаем ID мероприятий через moderator_activities
                         if (_currentRole.ToLower() == "модератор")
                         {
                             _myModeratorEventIds = context.moderator_activities
@@ -93,7 +95,6 @@ namespace UP._02._01_Vybornov.Pages
                                 .ToList();
                         }
 
-                        // Для жюри: загружаем ID мероприятий через jury_activities
                         if (_currentRole.ToLower() == "жюри")
                         {
                             _myJuryEventIds = context.jury_activities
@@ -121,8 +122,10 @@ namespace UP._02._01_Vybornov.Pages
             {
                 using (var context = new ConferenceDBEntities())
                 {
-                    // Загружаем все мероприятия
-                    var events = context.events.ToList();
+                    var events = context.events
+                        .OrderByDescending(e => e.start_date)
+                        .ToList();
+
                     var directions = context.directions.ToList();
                     var allUsers = context.users.ToList();
                     var cityEvents = context.city_event.ToList();
@@ -145,11 +148,9 @@ namespace UP._02._01_Vybornov.Pages
                             organizer_id = ev.organizer_id
                         };
 
-                        // Находим направление
                         var direction = directions.FirstOrDefault(d => d.direction_id == ev.direction_id);
                         viewModel.direction_name = direction?.direction_name ?? "Не указано";
 
-                        // Находим организатора
                         if (ev.organizer_id.HasValue)
                         {
                             var organizer = allUsers.FirstOrDefault(u => u.user_id == ev.organizer_id.Value);
@@ -160,7 +161,6 @@ namespace UP._02._01_Vybornov.Pages
                             viewModel.organizer_name = "Не указан";
                         }
 
-                        // Форматируем даты
                         if (ev.start_date == ev.end_date)
                         {
                             viewModel.date_range = ev.start_date.ToString("dd.MM.yyyy");
@@ -170,11 +170,9 @@ namespace UP._02._01_Vybornov.Pages
                             viewModel.date_range = $"{ev.start_date:dd.MM.yyyy} - {ev.end_date:dd.MM.yyyy}";
                         }
 
-                        // Определяем статус мероприятия
                         viewModel.is_upcoming = ev.end_date >= DateTime.Today;
                         viewModel.duration_days = (ev.end_date - ev.start_date).Days + 1;
 
-                        // Находим город проведения
                         var cityEvent = cityEvents.FirstOrDefault(ce => ce.event_id == ev.event_id);
 
                         if (cityEvent != null)
@@ -187,26 +185,21 @@ namespace UP._02._01_Vybornov.Pages
                             viewModel.city_name = "Не указан";
                         }
 
-                        // Проверяем, зарегистрирован ли пользователь на это мероприятие
                         viewModel.is_registered = false;
 
-                        // Для участников
                         if (_currentUser != null && _currentRole.ToLower() == "участник")
                         {
                             viewModel.is_registered = _myRegisteredEventIds.Contains(ev.event_id);
                         }
-                        // Для модераторов
                         else if (_currentUser != null && _currentRole.ToLower() == "модератор")
                         {
                             viewModel.is_registered = _myModeratorEventIds.Contains(ev.event_id);
                         }
-                        // Для жюри
                         else if (_currentUser != null && _currentRole.ToLower() == "жюри")
                         {
                             viewModel.is_registered = _myJuryEventIds.Contains(ev.event_id);
                         }
 
-                        // Для модератора: проверяем, на какие активности он зарегистрирован
                         if (_currentUser != null && _currentRole.ToLower() == "модератор" && viewModel.is_registered)
                         {
                             var moderatorActivities = context.moderator_activities
@@ -227,7 +220,6 @@ namespace UP._02._01_Vybornov.Pages
                             }
                         }
 
-                        // Для жюри: проверяем, на какие активности он зарегистрирован
                         if (_currentUser != null && _currentRole.ToLower() == "жюри" && viewModel.is_registered)
                         {
                             var juryActivities = context.jury_activities
@@ -248,10 +240,8 @@ namespace UP._02._01_Vybornov.Pages
                             }
                         }
 
-                        // Исправляем путь к логотипу, если он относительный
                         if (!string.IsNullOrEmpty(ev.logo_path))
                         {
-                            // Если путь не содержит полного URI, добавляем префикс
                             if (!ev.logo_path.StartsWith("http") && !ev.logo_path.StartsWith("/"))
                             {
                                 viewModel.logo_path = "/" + ev.logo_path.TrimStart('\\', '/');
@@ -261,11 +251,14 @@ namespace UP._02._01_Vybornov.Pages
                                 viewModel.logo_path = ev.logo_path;
                             }
                         }
+                        else
+                        {
+                            viewModel.logo_path = "/Resources/default_event.png";
+                        }
 
                         _allEvents.Add(viewModel);
                     }
 
-                    // Показываем все мероприятия (без фильтров)
                     ApplyFilters();
                 }
             }
@@ -288,7 +281,6 @@ namespace UP._02._01_Vybornov.Pages
 
                     DirectionFilterComboBox.Items.Clear();
 
-                    // Добавляем элемент "Все направления"
                     var allItem = new ComboBoxItem();
                     allItem.Content = "Все направления";
                     allItem.Tag = "all";
@@ -302,7 +294,6 @@ namespace UP._02._01_Vybornov.Pages
                         DirectionFilterComboBox.Items.Add(item);
                     }
 
-                    // Выбираем первый элемент
                     if (DirectionFilterComboBox.Items.Count > 0)
                     {
                         DirectionFilterComboBox.SelectedIndex = 0;
@@ -318,15 +309,16 @@ namespace UP._02._01_Vybornov.Pages
 
         private void ApplyFilters()
         {
+            if (_allEvents == null || !_allEvents.Any())
+                return;
+
             var filteredEvents = _allEvents.AsEnumerable();
 
-            // Применяем фильтр "Мои мероприятия"
             if (_showMyEventsOnly)
             {
                 filteredEvents = filteredEvents.Where(e => e.is_registered);
             }
 
-            // Применяем фильтр по направлению
             var selectedDirection = DirectionFilterComboBox.SelectedItem as ComboBoxItem;
             if (selectedDirection?.Tag?.ToString() != "all")
             {
@@ -336,21 +328,18 @@ namespace UP._02._01_Vybornov.Pages
                 }
             }
 
-            // Применяем фильтр по дате начала (если выбрана)
             if (StartDatePicker.SelectedDate.HasValue)
             {
                 DateTime startDate = StartDatePicker.SelectedDate.Value;
                 filteredEvents = filteredEvents.Where(e => e.start_date >= startDate);
             }
 
-            // Применяем фильтр по дате окончания (если выбрана)
             if (EndDatePicker.SelectedDate.HasValue)
             {
                 DateTime endDate = EndDatePicker.SelectedDate.Value;
                 filteredEvents = filteredEvents.Where(e => e.end_date <= endDate);
             }
 
-            // Проверяем, чтобы дата начала была раньше даты окончания (если обе выбраны)
             if (StartDatePicker.SelectedDate.HasValue && EndDatePicker.SelectedDate.HasValue)
             {
                 if (StartDatePicker.SelectedDate.Value > EndDatePicker.SelectedDate.Value)
@@ -361,17 +350,18 @@ namespace UP._02._01_Vybornov.Pages
                 }
             }
 
-            // Обновляем список
             ItemsControlEvents.ItemsSource = filteredEvents.ToList();
             UpdateEventsCount();
         }
 
         private void UpdateEventsCount()
         {
+            if (_allEvents == null)
+                return;
+
             int totalCount = _allEvents.Count;
             int filteredCount = ItemsControlEvents.Items.Count;
 
-            // Определяем количество мероприятий пользователя в зависимости от роли
             int myEventsCount = 0;
             if (_currentUser != null)
             {
@@ -419,7 +409,6 @@ namespace UP._02._01_Vybornov.Pages
             }
         }
 
-        // Обработчики фильтров
         private void DirectionFilterComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ApplyFilters();
@@ -427,60 +416,46 @@ namespace UP._02._01_Vybornov.Pages
 
         private void StartDatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
-            // Автоматически применяем фильтр при изменении даты
             ApplyFilters();
         }
 
         private void EndDatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
-            // Автоматически применяем фильтр при изменении даты
             ApplyFilters();
         }
 
         private void ApplyDateFilterButtonClick(object sender, RoutedEventArgs e)
         {
-            // Явное применение фильтра
             ApplyFilters();
         }
 
         private void ResetFiltersButtonClick(object sender, RoutedEventArgs e)
         {
-            // Сбрасываем все фильтры
             ResetAllFilters();
         }
 
         private void ResetAllFilters()
         {
-            // Сбрасываем фильтр по направлению
             if (DirectionFilterComboBox.Items.Count > 0)
             {
                 DirectionFilterComboBox.SelectedIndex = 0;
             }
 
-            // Очищаем DatePicker
             StartDatePicker.SelectedDate = null;
             EndDatePicker.SelectedDate = null;
 
-            // Очищаем текст в DatePicker (если он остался)
-            StartDatePicker.Text = "";
-            EndDatePicker.Text = "";
-
-            // Сбрасываем фильтр "Мои мероприятия"
             if (_showMyEventsOnly)
             {
                 _showMyEventsOnly = false;
                 UpdateMyEventsButtonAppearance();
             }
 
-            // Показываем все мероприятия
-            ItemsControlEvents.ItemsSource = _allEvents;
-            UpdateEventsCount();
+            ApplyFilters();
 
             MessageBox.Show("Все фильтры сброшены", "Информация",
                 MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
-        // Обработчики кликов
         private void EventCard_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (sender is Border border && border.Tag != null && int.TryParse(border.Tag.ToString(), out int eventId))
@@ -495,7 +470,6 @@ namespace UP._02._01_Vybornov.Pages
             NavigationService.Navigate(eventDetailsPage);
         }
 
-        // Навигационные кнопки
         private void MyEventsButtonClick(object sender, RoutedEventArgs e)
         {
             if (_currentUser == null ||
@@ -517,15 +491,15 @@ namespace UP._02._01_Vybornov.Pages
         {
             if (_showMyEventsOnly)
             {
-                MyEventsButton.Background = (SolidColorBrush)FindResource("AccentColor");
+                MyEventsButton.Background = new SolidColorBrush(Color.FromRgb(84, 111, 148));
                 MyEventsButton.Foreground = Brushes.White;
                 MyEventsButton.Content = "Все мероприятия";
                 MyEventsButton.ToolTip = "Показать все мероприятия";
             }
             else
             {
-                MyEventsButton.Background = (SolidColorBrush)FindResource("SecondaryBackground");
-                MyEventsButton.Foreground = (SolidColorBrush)FindResource("TextColor");
+                MyEventsButton.Background = new SolidColorBrush(Color.FromRgb(171, 207, 206));
+                MyEventsButton.Foreground = Brushes.Black;
                 MyEventsButton.Content = "Мои мероприятия";
                 MyEventsButton.ToolTip = "Показать только мероприятия, на которые вы зарегистрированы";
             }
@@ -533,11 +507,28 @@ namespace UP._02._01_Vybornov.Pages
 
         private void ProfileButtonClick(object sender, RoutedEventArgs e)
         {
-            var profilePage = new ProfilePage(_currentUser);
-            NavigationService.Navigate(profilePage);
+            if (_currentUser != null)
+            {
+                var profilePage = new ProfilePage(_currentUser);
+                NavigationService.Navigate(profilePage);
+            }
+            else
+            {
+                MessageBox.Show("Для доступа к профилю необходимо авторизоваться",
+                    "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
         }
 
-        // Класс для отображения мероприятий
+        private void RefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            LoadMyRegistrations();
+            LoadEvents();
+            MessageBox.Show("Список мероприятий обновлен",
+                "Обновлено",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+        }
+
         public class EventViewModel
         {
             public int event_id { get; set; }
@@ -557,7 +548,6 @@ namespace UP._02._01_Vybornov.Pages
             public int duration_days { get; set; }
             public bool is_registered { get; set; }
 
-            // Добавляем информацию о ролях
             public List<string> ModeratorActivities { get; set; } = new List<string>();
             public List<string> JuryActivities { get; set; } = new List<string>();
             public string RoleInfo { get; set; }

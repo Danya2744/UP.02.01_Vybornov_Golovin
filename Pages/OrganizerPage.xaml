@@ -43,7 +43,6 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Шапка -->
         <Border Grid.Row="0" 
                 Background="{StaticResource PrimaryBackground}" 
                 Padding="15"
@@ -65,7 +64,6 @@
             </DockPanel>
         </Border>
 
-        <!-- Контент -->
         <ScrollViewer Grid.Row="1" 
                      VerticalScrollBarVisibility="Auto"
                      Padding="20">
@@ -75,7 +73,6 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Меню -->
                 <Border Grid.Column="0"
                         Background="{StaticResource PrimaryBackground}"
                         BorderBrush="{StaticResource BorderColor}"
@@ -106,7 +103,6 @@
                     </StackPanel>
                 </Border>
 
-                <!-- Информационная панель -->
                 <Border Grid.Column="1"
                         Background="{StaticResource PrimaryBackground}"
                         BorderBrush="{StaticResource BorderColor}"
