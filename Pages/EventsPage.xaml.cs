@@ -16,6 +16,8 @@ namespace UP._02._01_Vybornov.Pages
         private string _currentRole;
         private bool _showMyEventsOnly = false;
         private List<int> _myRegisteredEventIds = new List<int>();
+        private List<int> _myModeratorEventIds = new List<int>();
+        private List<int> _myJuryEventIds = new List<int>();
 
         public EventsPage(users user, string role)
         {
@@ -36,17 +38,22 @@ namespace UP._02._01_Vybornov.Pages
 
         private void UpdateNavigationButtons()
         {
-            if (_currentUser != null && _currentRole.ToLower() == "участник")
+            if (_currentUser != null)
             {
-                // Показываем кнопки для участника
-                MyEventsButton.Visibility = Visibility.Visible;
+                // Показываем кнопку профиля для всех авторизованных пользователей
                 ProfileButton.Visibility = Visibility.Visible;
-            }
-            else if (_currentUser != null)
-            {
-                // Другие роли (кроме участника)
-                ProfileButton.Visibility = Visibility.Visible;
-                MyEventsButton.Visibility = Visibility.Collapsed;
+
+                // Показываем кнопку "Мои мероприятия" для участников, модераторов и жюри
+                if (_currentRole.ToLower() == "участник" ||
+                    _currentRole.ToLower() == "модератор" ||
+                    _currentRole.ToLower() == "жюри")
+                {
+                    MyEventsButton.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    MyEventsButton.Visibility = Visibility.Collapsed;
+                }
             }
             else
             {
@@ -58,17 +65,46 @@ namespace UP._02._01_Vybornov.Pages
 
         private void LoadMyRegistrations()
         {
-            if (_currentUser != null && _currentRole.ToLower() == "участник")
+            if (_currentUser != null)
             {
                 try
                 {
                     using (var context = new ConferenceDBEntities())
                     {
-                        // Загружаем ID мероприятий, на которые зарегистрирован пользователь
-                        _myRegisteredEventIds = context.event_registrations
-                            .Where(r => r.user_id == _currentUser.user_id)
-                            .Select(r => r.event_id)
-                            .ToList();
+                        // Для участников: загружаем ID мероприятий из event_registrations
+                        if (_currentRole.ToLower() == "участник")
+                        {
+                            _myRegisteredEventIds = context.event_registrations
+                                .Where(r => r.user_id == _currentUser.user_id)
+                                .Select(r => r.event_id)
+                                .ToList();
+                        }
+
+                        // Для модераторов: загружаем ID мероприятий через moderator_activities
+                        if (_currentRole.ToLower() == "модератор")
+                        {
+                            _myModeratorEventIds = context.moderator_activities
+                                .Where(ma => ma.moderator_id == _currentUser.user_id)
+                                .Join(context.activities,
+                                      ma => ma.activity_id,
+                                      a => a.activity_id,
+                                      (ma, a) => a.event_id)
+                                .Distinct()
+                                .ToList();
+                        }
+
+                        // Для жюри: загружаем ID мероприятий через jury_activities
+                        if (_currentRole.ToLower() == "жюри")
+                        {
+                            _myJuryEventIds = context.jury_activities
+                                .Where(ja => ja.jury_id == _currentUser.user_id)
+                                .Join(context.activities,
+                                      ja => ja.activity_id,
+                                      a => a.activity_id,
+                                      (ja, a) => a.event_id)
+                                .Distinct()
+                                .ToList();
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -152,9 +188,65 @@ namespace UP._02._01_Vybornov.Pages
                         }
 
                         // Проверяем, зарегистрирован ли пользователь на это мероприятие
-                        viewModel.is_registered = _currentUser != null &&
-                                                 _currentRole.ToLower() == "участник" &&
-                                                 _myRegisteredEventIds.Contains(ev.event_id);
+                        viewModel.is_registered = false;
+
+                        // Для участников
+                        if (_currentUser != null && _currentRole.ToLower() == "участник")
+                        {
+                            viewModel.is_registered = _myRegisteredEventIds.Contains(ev.event_id);
+                        }
+                        // Для модераторов
+                        else if (_currentUser != null && _currentRole.ToLower() == "модератор")
+                        {
+                            viewModel.is_registered = _myModeratorEventIds.Contains(ev.event_id);
+                        }
+                        // Для жюри
+                        else if (_currentUser != null && _currentRole.ToLower() == "жюри")
+                        {
+                            viewModel.is_registered = _myJuryEventIds.Contains(ev.event_id);
+                        }
+
+                        // Для модератора: проверяем, на какие активности он зарегистрирован
+                        if (_currentUser != null && _currentRole.ToLower() == "модератор" && viewModel.is_registered)
+                        {
+                            var moderatorActivities = context.moderator_activities
+                                .Where(ma => ma.moderator_id == _currentUser.user_id)
+                                .Join(context.activities,
+                                      ma => ma.activity_id,
+                                      a => a.activity_id,
+                                      (ma, a) => a)
+                                .Where(a => a.event_id == ev.event_id)
+                                .ToList();
+
+                            if (moderatorActivities.Any())
+                            {
+                                viewModel.ModeratorActivities = moderatorActivities
+                                    .Select(a => a.activity_name)
+                                    .ToList();
+                                viewModel.RoleInfo = $"Модератор активностей: {string.Join(", ", viewModel.ModeratorActivities)}";
+                            }
+                        }
+
+                        // Для жюри: проверяем, на какие активности он зарегистрирован
+                        if (_currentUser != null && _currentRole.ToLower() == "жюри" && viewModel.is_registered)
+                        {
+                            var juryActivities = context.jury_activities
+                                .Where(ja => ja.jury_id == _currentUser.user_id)
+                                .Join(context.activities,
+                                      ja => ja.activity_id,
+                                      a => a.activity_id,
+                                      (ja, a) => a)
+                                .Where(a => a.event_id == ev.event_id)
+                                .ToList();
+
+                            if (juryActivities.Any())
+                            {
+                                viewModel.JuryActivities = juryActivities
+                                    .Select(a => a.activity_name)
+                                    .ToList();
+                                viewModel.RoleInfo = $"Жюри активностей: {string.Join(", ", viewModel.JuryActivities)}";
+                            }
+                        }
 
                         // Исправляем путь к логотипу, если он относительный
                         if (!string.IsNullOrEmpty(ev.logo_path))
@@ -278,11 +370,44 @@ namespace UP._02._01_Vybornov.Pages
         {
             int totalCount = _allEvents.Count;
             int filteredCount = ItemsControlEvents.Items.Count;
-            int myRegisteredCount = _myRegisteredEventIds.Count;
+
+            // Определяем количество мероприятий пользователя в зависимости от роли
+            int myEventsCount = 0;
+            if (_currentUser != null)
+            {
+                switch (_currentRole.ToLower())
+                {
+                    case "участник":
+                        myEventsCount = _myRegisteredEventIds.Count;
+                        break;
+                    case "модератор":
+                        myEventsCount = _myModeratorEventIds.Count;
+                        break;
+                    case "жюри":
+                        myEventsCount = _myJuryEventIds.Count;
+                        break;
+                }
+            }
 
             if (_showMyEventsOnly)
             {
-                EventsCountTextBlock.Text = $"Мои мероприятия: {filteredCount} из {myRegisteredCount}";
+                string roleText = "Мои мероприятия";
+                if (_currentUser != null)
+                {
+                    switch (_currentRole.ToLower())
+                    {
+                        case "участник":
+                            roleText = "Мои мероприятия";
+                            break;
+                        case "модератор":
+                            roleText = "Мои мероприятия (модератор)";
+                            break;
+                        case "жюри":
+                            roleText = "Мои мероприятия (жюри)";
+                            break;
+                    }
+                }
+                EventsCountTextBlock.Text = $"{roleText}: {filteredCount} из {myEventsCount}";
             }
             else if (totalCount == filteredCount)
             {
@@ -373,9 +498,12 @@ namespace UP._02._01_Vybornov.Pages
         // Навигационные кнопки
         private void MyEventsButtonClick(object sender, RoutedEventArgs e)
         {
-            if (_currentUser == null || _currentRole.ToLower() != "участник")
+            if (_currentUser == null ||
+                (_currentRole.ToLower() != "участник" &&
+                 _currentRole.ToLower() != "модератор" &&
+                 _currentRole.ToLower() != "жюри"))
             {
-                MessageBox.Show("Эта функция доступна только для участников",
+                MessageBox.Show("Эта функция доступна только для участников, модераторов и жюри",
                     "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
@@ -392,12 +520,14 @@ namespace UP._02._01_Vybornov.Pages
                 MyEventsButton.Background = (SolidColorBrush)FindResource("AccentColor");
                 MyEventsButton.Foreground = Brushes.White;
                 MyEventsButton.Content = "Все мероприятия";
+                MyEventsButton.ToolTip = "Показать все мероприятия";
             }
             else
             {
                 MyEventsButton.Background = (SolidColorBrush)FindResource("SecondaryBackground");
                 MyEventsButton.Foreground = (SolidColorBrush)FindResource("TextColor");
                 MyEventsButton.Content = "Мои мероприятия";
+                MyEventsButton.ToolTip = "Показать только мероприятия, на которые вы зарегистрированы";
             }
         }
 
@@ -426,6 +556,11 @@ namespace UP._02._01_Vybornov.Pages
             public bool is_upcoming { get; set; }
             public int duration_days { get; set; }
             public bool is_registered { get; set; }
+
+            // Добавляем информацию о ролях
+            public List<string> ModeratorActivities { get; set; } = new List<string>();
+            public List<string> JuryActivities { get; set; } = new List<string>();
+            public string RoleInfo { get; set; }
         }
     }
 }

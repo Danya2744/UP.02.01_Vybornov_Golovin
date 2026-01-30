@@ -59,6 +59,9 @@
             <Setter Property="Padding" Value="5"/>
         </Style>
 
+        <!-- Конвертер для проверки пустой строки -->
+        <BooleanToVisibilityConverter x:Key="StringToVisibilityConverter"/>
+
         <!-- Шаблон для карточки мероприятия -->
         <DataTemplate x:Key="EventCardTemplate">
             <Border Style="{StaticResource EventCardStyle}" 
@@ -81,25 +84,40 @@
                                   TextWrapping="Wrap"
                                   VerticalAlignment="Center"/>
 
-                        <!-- Бейдж регистрации -->
-                        <Border Grid.Column="1"
-                                Background="{StaticResource RegisteredColor}"
-                                CornerRadius="12"
-                                Padding="8,3"
-                                Margin="10,0,0,0"
-                                Visibility="{Binding is_registered, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="✓"
+                        <!-- Бейдж регистрации и информация о роли -->
+                        <StackPanel Grid.Column="1" Orientation="Vertical" Margin="10,0,0,0">
+                            <!-- Бейдж регистрации -->
+                            <Border Background="{StaticResource RegisteredColor}"
+                                    CornerRadius="12"
+                                    Padding="8,3"
+                                    Margin="0,0,0,5"
+                                    Visibility="{Binding is_registered, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="✓"
+                                              FontSize="10"
+                                              FontWeight="Bold"
+                                              Foreground="White"
+                                              Margin="0,0,3,0"/>
+                                    <TextBlock Text="Вы зарегистрированы"
+                                              FontSize="10"
+                                              FontWeight="Bold"
+                                              Foreground="White"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Информация о роли (для модераторов и жюри) -->
+                            <Border Background="{StaticResource AccentColor}"
+                                    CornerRadius="8"
+                                    Padding="6,3"
+                                    Visibility="{Binding RoleInfo, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <TextBlock Text="{Binding RoleInfo}"
                                           FontSize="10"
                                           FontWeight="Bold"
                                           Foreground="White"
-                                          Margin="0,0,3,0"/>
-                                <TextBlock Text="Вы зарегистрированы"
-                                          FontSize="10"
-                                          FontWeight="Bold"
-                                          Foreground="White"/>
-                            </StackPanel>
-                        </Border>
+                                          TextWrapping="Wrap"
+                                          MaxWidth="200"/>
+                            </Border>
+                        </StackPanel>
                     </Grid>
 
                     <!-- Содержимое -->

@@ -36,6 +36,23 @@
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="BorderThickness" Value="0"/>
         </Style>
+
+        <Style x:Key="ComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Margin" Value="0,5,0,10"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <Style x:Key="ListBoxStyle" TargetType="ListBox">
+            <Setter Property="Margin" Value="0,5,0,10"/>
+            <Setter Property="MaxHeight" Value="150"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="White"/>
+        </Style>
     </Page.Resources>
 
     <Grid Background="{StaticResource SecondaryBackground}">
@@ -74,7 +91,7 @@
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="400"/>
+                    <ColumnDefinition Width="450"/>
                 </Grid.ColumnDefinitions>
 
                 <!-- Основная информация -->
@@ -274,10 +291,87 @@
                                           TextWrapping="Wrap"/>
                             </StackPanel>
 
+                            <!-- Для модераторов -->
+                            <StackPanel x:Name="ModeratorActionsPanel"
+                                      Visibility="Collapsed">
+                                <TextBlock Text="Выберите активность для модерации:"
+                                          FontSize="13"
+                                          Foreground="{StaticResource TextColor}"
+                                          Margin="0,0,0,5"/>
+
+                                <ComboBox x:Name="ModeratorActivitiesComboBox"
+                                          Style="{StaticResource ComboBoxStyle}"
+                                          DisplayMemberPath="activity_name">
+                                    <ComboBox.ToolTip>
+                                        <ToolTip>
+                                            Выберите активность для модерации
+                                            (на одну активность может быть только один модератор)
+                                        </ToolTip>
+                                    </ComboBox.ToolTip>
+                                </ComboBox>
+
+                                <Button x:Name="RegisterAsModeratorButton"
+                                        Content="Зарегистрироваться как модератор"
+                                        Style="{StaticResource ActionButtonStyle}"
+                                        Click="RegisterAsModeratorButton_Click"
+                                        Background="{StaticResource WarningColor}"
+                                        Foreground="White"/>
+                            </StackPanel>
+
+                            <!-- Для жюри -->
+                            <StackPanel x:Name="JuryActionsPanel"
+                                      Visibility="Collapsed">
+                                <TextBlock Text="Выберите активность для оценки:"
+                                          FontSize="13"
+                                          Foreground="{StaticResource TextColor}"
+                                          Margin="0,0,0,5"/>
+
+                                <ComboBox x:Name="JuryActivitiesComboBox"
+                                          Style="{StaticResource ComboBoxStyle}"
+                                          DisplayMemberPath="activity_name">
+                                    <ComboBox.ToolTip>
+                                        <ToolTip>
+                                            Выберите активность для оценки как жюри
+                                            (на одну активность может быть несколько жюри)
+                                        </ToolTip>
+                                    </ComboBox.ToolTip>
+                                </ComboBox>
+
+                                <Button x:Name="RegisterAsJuryButton"
+                                        Content="Добавить активность для оценки"
+                                        Style="{StaticResource ActionButtonStyle}"
+                                        Click="RegisterAsJuryButton_Click"
+                                        Background="{StaticResource AccentColor}"
+                                        Foreground="White"/>
+
+                                <TextBlock Text="Ваши активности для оценки:"
+                                          FontSize="13"
+                                          FontWeight="SemiBold"
+                                          Foreground="{StaticResource TextColor}"
+                                          Margin="0,15,0,5"/>
+
+                                <ListBox x:Name="SelectedJuryActivitiesListBox"
+                                         Style="{StaticResource ListBoxStyle}"
+                                         DisplayMemberPath="activity_name">
+                                    <ListBox.ToolTip>
+                                        <ToolTip>
+                                            Список активностей, на которые вы зарегистрированы как жюри
+                                        </ToolTip>
+                                    </ListBox.ToolTip>
+                                </ListBox>
+
+                                <Button x:Name="RemoveJuryActivityButton"
+                                        Content="Удалить выбранную активность"
+                                        Style="{StaticResource ActionButtonStyle}"
+                                        Click="RemoveJuryActivityButton_Click"
+                                        Background="{StaticResource ErrorColor}"
+                                        Foreground="White"/>
+                            </StackPanel>
+
                             <!-- Для гостей -->
                             <StackPanel x:Name="GuestActionsPanel"
                                       Visibility="Visible">
-                                <TextBlock Text="Для регистрации на мероприятие необходимо войти в систему как участник."
+                                <TextBlock Text="Для участия в мероприятии необходимо войти в систему."
                                           FontSize="13"
                                           Foreground="{StaticResource SecondaryTextColor}"
                                           Margin="0,0,0,10"
@@ -293,8 +387,8 @@
                         </StackPanel>
                     </Border>
 
-                    <!-- Активности -->
-                    <TextBlock Text="Активности" 
+                    <!-- Активности мероприятия -->
+                    <TextBlock Text="Активности мероприятия" 
                               FontSize="18"
                               FontWeight="Bold"
                               Foreground="{StaticResource AccentColor}"

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,13 +13,14 @@ namespace UP._02._01_Vybornov.Pages
         private users _currentUser;
         private string _currentRole;
         private event_registrations _currentRegistration;
+        private List<activities> _activities;
 
         public EventDetailsPage(int eventId, users user = null, string role = null)
         {
             InitializeComponent();
             _eventId = eventId;
             _currentUser = user;
-            _currentRole = role;
+            _currentRole = role?.ToLower();
 
             Loaded += EventDetailsPage_Loaded;
             UpdateUIForUser();
@@ -26,29 +28,40 @@ namespace UP._02._01_Vybornov.Pages
 
         private void UpdateUIForUser()
         {
+            // Скрываем все панели сначала
+            GuestActionsPanel.Visibility = Visibility.Collapsed;
+            ParticipantActionsPanel.Visibility = Visibility.Collapsed;
+            ModeratorActionsPanel.Visibility = Visibility.Collapsed;
+            JuryActionsPanel.Visibility = Visibility.Collapsed;
+
             if (_currentUser != null)
             {
                 // Пользователь авторизован
                 GuestActionsPanel.Visibility = Visibility.Collapsed;
 
-                if (_currentRole.ToLower() == "участник")
+                switch (_currentRole)
                 {
-                    // Показываем панель действий для участника
-                    ParticipantActionsPanel.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    // Для других ролей (организатор, модератор, жюри)
-                    ParticipantActionsPanel.Visibility = Visibility.Collapsed;
-                    GuestActionsPanel.Visibility = Visibility.Visible;
-
+                    case "участник":
+                        ParticipantActionsPanel.Visibility = Visibility.Visible;
+                        break;
+                    case "модератор":
+                        ModeratorActionsPanel.Visibility = Visibility.Visible;
+                        break;
+                    case "жюри":
+                        JuryActionsPanel.Visibility = Visibility.Visible;
+                        break;
+                    case "организатор":
+                        // У организатора пока нет специальных действий
+                        break;
+                    default:
+                        GuestActionsPanel.Visibility = Visibility.Visible;
+                        break;
                 }
             }
             else
             {
                 // Гость
                 GuestActionsPanel.Visibility = Visibility.Visible;
-                ParticipantActionsPanel.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -56,6 +69,85 @@ namespace UP._02._01_Vybornov.Pages
         {
             LoadEventDetails();
             CheckUserRegistration();
+            LoadUserRoles();
+        }
+
+        private void LoadUserRoles()
+        {
+            if (_currentUser != null)
+            {
+                try
+                {
+                    using (var context = new ConferenceDBEntities())
+                    {
+                        // Загружаем активности для текущего мероприятия
+                        _activities = context.activities
+                            .Where(a => a.event_id == _eventId)
+                            .OrderBy(a => a.activity_day)
+                            .ThenBy(a => a.start_time)
+                            .ToList();
+
+                        // Для модератора: проверяем, на какие активности он уже зарегистрирован
+                        if (_currentRole == "модератор")
+                        {
+                            var moderatorActivities = context.moderator_activities
+                                .Where(ma => ma.moderator_id == _currentUser.user_id)
+                                .Select(ma => ma.activity_id)
+                                .ToList();
+
+                            ModeratorActivitiesComboBox.ItemsSource = _activities
+                                .Where(a => !moderatorActivities.Contains(a.activity_id))
+                                .ToList();
+                        }
+
+                        // Для жюри: проверяем, на какие активности он уже зарегистрирован
+                        if (_currentRole == "жюри")
+                        {
+                            var juryActivities = context.jury_activities
+                                .Where(ja => ja.jury_id == _currentUser.user_id)
+                                .Select(ja => ja.activity_id)
+                                .ToList();
+
+                            JuryActivitiesComboBox.ItemsSource = _activities
+                                .Where(a => !juryActivities.Contains(a.activity_id))
+                                .ToList();
+
+                            // Загружаем уже выбранные активности для отображения
+                            LoadSelectedJuryActivities();
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка загрузки ролей: {ex.Message}",
+                        "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
+        private void LoadSelectedJuryActivities()
+        {
+            try
+            {
+                using (var context = new ConferenceDBEntities())
+                {
+                    var selectedActivities = context.jury_activities
+                        .Where(ja => ja.jury_id == _currentUser.user_id)
+                        .Join(context.activities,
+                              ja => ja.activity_id,
+                              a => a.activity_id,
+                              (ja, a) => a)
+                        .Where(a => a.event_id == _eventId)
+                        .ToList();
+
+                    SelectedJuryActivitiesListBox.ItemsSource = selectedActivities;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка загрузки выбранных активностей: {ex.Message}",
+                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void LoadEventDetails()
@@ -86,6 +178,7 @@ namespace UP._02._01_Vybornov.Pages
 
                     // Обновляем UI
                     EventTitleTextBlock.Text = ev.event_name;
+                    PageTitleTextBlock.Text = ev.event_name;
 
                     // Дата
                     if (ev.start_date == ev.end_date)
@@ -143,7 +236,7 @@ namespace UP._02._01_Vybornov.Pages
 
         private void CheckUserRegistration()
         {
-            if (_currentUser != null && _currentRole.ToLower() == "участник")
+            if (_currentUser != null && _currentRole == "участник")
             {
                 try
                 {
@@ -198,9 +291,155 @@ namespace UP._02._01_Vybornov.Pages
             }
         }
 
+        private void RegisterAsModeratorButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (ModeratorActivitiesComboBox.SelectedItem == null)
+            {
+                MessageBox.Show("Пожалуйста, выберите активность для модерации",
+                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var selectedActivity = ModeratorActivitiesComboBox.SelectedItem as activities;
+
+            try
+            {
+                using (var context = new ConferenceDBEntities())
+                {
+                    // Проверяем, не занята ли уже эта активность другим модератором
+                    var existingModerator = context.moderator_activities
+                        .FirstOrDefault(ma => ma.activity_id == selectedActivity.activity_id);
+
+                    if (existingModerator != null)
+                    {
+                        MessageBox.Show("Эта активность уже имеет модератора",
+                            "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+
+                    // Добавляем модератора к активности
+                    var moderatorActivity = new moderator_activities
+                    {
+                        activity_id = selectedActivity.activity_id,
+                        moderator_id = _currentUser.user_id
+                    };
+
+                    context.moderator_activities.Add(moderatorActivity);
+                    context.SaveChanges();
+
+                    MessageBox.Show($"Вы успешно зарегистрированы как модератор на активность:\n\"{selectedActivity.activity_name}\"",
+                        "Успешно", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    // Обновляем список доступных активностей
+                    LoadUserRoles();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при регистрации как модератор: {ex.Message}",
+                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void RegisterAsJuryButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (JuryActivitiesComboBox.SelectedItem == null)
+            {
+                MessageBox.Show("Пожалуйста, выберите активность для оценки",
+                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var selectedActivity = JuryActivitiesComboBox.SelectedItem as activities;
+
+            try
+            {
+                using (var context = new ConferenceDBEntities())
+                {
+                    // Проверяем, не зарегистрирован ли уже пользователь на эту активность как жюри
+                    var existingJury = context.jury_activities
+                        .FirstOrDefault(ja => ja.activity_id == selectedActivity.activity_id &&
+                                             ja.jury_id == _currentUser.user_id);
+
+                    if (existingJury != null)
+                    {
+                        MessageBox.Show("Вы уже зарегистрированы как жюри на эту активность",
+                            "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+                        return;
+                    }
+
+                    // Добавляем жюри к активности
+                    var juryActivity = new jury_activities
+                    {
+                        activity_id = selectedActivity.activity_id,
+                        jury_id = _currentUser.user_id
+                    };
+
+                    context.jury_activities.Add(juryActivity);
+                    context.SaveChanges();
+
+                    MessageBox.Show($"Вы успешно зарегистрированы как жюри на активность:\n\"{selectedActivity.activity_name}\"",
+                        "Успешно", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    // Обновляем списки
+                    LoadUserRoles();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при регистрации как жюри: {ex.Message}",
+                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void RemoveJuryActivityButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (SelectedJuryActivitiesListBox.SelectedItem == null)
+            {
+                MessageBox.Show("Пожалуйста, выберите активность для удаления",
+                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var selectedActivity = SelectedJuryActivitiesListBox.SelectedItem as activities;
+
+            var result = MessageBox.Show($"Вы уверены, что хотите удалить себя как жюри из активности:\n\"{selectedActivity.activity_name}\"?",
+                "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    using (var context = new ConferenceDBEntities())
+                    {
+                        var juryActivity = context.jury_activities
+                            .FirstOrDefault(ja => ja.activity_id == selectedActivity.activity_id &&
+                                                 ja.jury_id == _currentUser.user_id);
+
+                        if (juryActivity != null)
+                        {
+                            context.jury_activities.Remove(juryActivity);
+                            context.SaveChanges();
+
+                            MessageBox.Show("Вы успешно удалены как жюри из этой активности",
+                                "Успешно", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                            // Обновляем списки
+                            LoadUserRoles();
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка при удалении: {ex.Message}",
+                        "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
         private void RegisterButton_Click(object sender, RoutedEventArgs e)
         {
-            if (_currentUser == null || _currentRole.ToLower() != "участник")
+            if (_currentUser == null || _currentRole != "участник")
             {
                 MessageBox.Show("Для регистрации необходимо быть авторизованным участником",
                     "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);

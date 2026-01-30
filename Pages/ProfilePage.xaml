@@ -15,6 +15,7 @@
         <SolidColorBrush x:Key="SecondaryTextColor" Color="#666666"/>
         <SolidColorBrush x:Key="BorderColor" Color="#DDDDDD"/>
         <SolidColorBrush x:Key="ErrorColor" Color="#F44336"/>
+        <SolidColorBrush x:Key="HoverColor" Color="#E0E0E0"/>
 
         <Style x:Key="BackButtonStyle" TargetType="Button">
             <Setter Property="Margin" Value="5"/>
@@ -117,29 +118,49 @@
                             CornerRadius="8"
                             Padding="20">
                         <StackPanel>
-                            <!-- Фото пользователя -->
-                            <Border Width="150" 
-                                    Height="150"
-                                    Background="{StaticResource SecondaryBackground}"
-                                    CornerRadius="75"
-                                    HorizontalAlignment="Center"
-                                    Margin="0,0,0,20">
-                                <Image x:Name="UserPhotoImage"
-                                       Stretch="Uniform"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"/>
-                            </Border>
+                            <!-- Фото пользователя с возможностью изменения -->
+                            <Grid Width="150" 
+                                  Height="150"
+                                  HorizontalAlignment="Center"
+                                  Margin="0,0,0,20"
+                                  Cursor="Hand"
+                                  MouseEnter="Grid_MouseEnter"
+                                  MouseLeave="Grid_MouseLeave"
+                                  MouseLeftButtonDown="Grid_MouseLeftButtonDown">
+                                <!-- Основной Border для фото -->
+                                <Border Background="{StaticResource SecondaryBackground}"
+                                        CornerRadius="75">
+                                    <Image x:Name="UserPhotoImage"
+                                           Stretch="Uniform"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+                                </Border>
+
+                                <!-- Наложение для изменения фото -->
+                                <Border x:Name="PhotoOverlay"
+                                        Background="#80000000"
+                                        CornerRadius="75"
+                                        Opacity="0">
+                                    <TextBlock Text="Изменить фото"
+                                              Foreground="White"
+                                              FontSize="12"
+                                              FontWeight="Bold"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                                </Border>
+                            </Grid>
+
+                            <TextBlock Text="Нажмите на фото для изменения"
+                                      FontSize="11"
+                                      Foreground="{StaticResource SecondaryTextColor}"
+                                      HorizontalAlignment="Center"
+                                      Margin="0,-15,0,20"
+                                      FontStyle="Italic"/>
 
                             <!-- ID Number (неизменяемый) -->
                             <TextBlock Text="ID Number:" 
                                       Style="{StaticResource FormLabelStyle}"/>
                             <TextBox x:Name="IdNumberTextBox"
-                                    Style="{StaticResource ReadOnlyFieldStyle}"/>
-
-                            <!-- Email (неизменяемый) -->
-                            <TextBlock Text="Email:" 
-                                      Style="{StaticResource FormLabelStyle}"/>
-                            <TextBox x:Name="EmailTextBox"
                                     Style="{StaticResource ReadOnlyFieldStyle}"/>
 
                             <!-- Роль -->

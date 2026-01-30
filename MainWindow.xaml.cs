@@ -63,8 +63,12 @@ namespace UP._02._01_Vybornov
                 string firstName = nameParts.Length > 0 ? nameParts[0] : user.full_name;
 
                 UserInfoTextBlock.Text = $"{firstName}";
-                UserRoleTextBlock.Text = CapitalizeFirstLetter(role);
-                Title = $"Система конференций - {CapitalizeFirstLetter(role)} ({greeting}, {firstName})";
+
+                // Форматируем отображение роли с правильным склонением
+                string roleDisplay = FormatRoleDisplay(role);
+                UserRoleTextBlock.Text = roleDisplay;
+
+                Title = $"Система конференций - {roleDisplay} ({greeting}, {firstName})";
 
                 LogoutButton.Visibility = Visibility.Visible;
             }
@@ -75,6 +79,30 @@ namespace UP._02._01_Vybornov
                 Title = "Система конференций - Гость";
 
                 LogoutButton.Visibility = Visibility.Visible;
+            }
+        }
+
+        private string FormatRoleDisplay(string role)
+        {
+            if (string.IsNullOrEmpty(role))
+                return "Пользователь";
+
+            string roleLower = role.ToLower();
+
+            switch (roleLower)
+            {
+                case "участник":
+                    return "Участник";
+                case "модератор":
+                    return "Модератор";
+                case "жюри":
+                    return "Член жюри";
+                case "организатор":
+                    return "Организатор";
+                case "гость":
+                    return "Гость";
+                default:
+                    return CapitalizeFirstLetter(role);
             }
         }
 
